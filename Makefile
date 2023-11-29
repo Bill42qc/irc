@@ -13,7 +13,7 @@ RM		=	rm -f
 MAKE	=	make
 
 # Output file name
-NAME	=	IRC
+NAME	=	ircserv
 # Sources are all .cpp files
 SRCS	=	main.cpp \
 			ACommand.cpp \

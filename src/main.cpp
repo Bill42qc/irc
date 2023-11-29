@@ -5,15 +5,14 @@ int main(int argc, char **argv)
 {
 	Server server;
 
-	(void) argc;
-	(void) argv;
-	try
-	{
-		server.init();
-		
+	if (argc != 3){
+		std::cerr << "ft irc only need 2 arg" << std::endl;
+		return 1;
 	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
+	try{
+		server.init(argv[1], argv[2]);	
+	}
+	catch(const std::exception& e){
+		std::cerr << e.what() << std::endl;
 	}
 }
