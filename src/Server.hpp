@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <cstring>
 #include <stdexcept>
+#include <fcntl.h>
 
 class Server
 {
@@ -29,6 +30,9 @@ public:
 	void addClient(Client &client);
 	void removeClient(const Client &client);
 	void createChannel(const std::string &name);
+	void handleNewConnection();
+	void handleData(int clientSocket);
+	void run();
 
 	class SocketException : public std::exception {
 	public:
@@ -39,6 +43,17 @@ public:
 	public:
 		const char* what() const throw(){return "error binding the socket";}
 	};
+
+	class ListenException : public std::exception {
+	public:
+		const char* what() const throw(){return "error listening the socket";}
+	};
+
+	class AcceptException : public std::exception {
+	public:
+		const char* what() const throw(){return "error in accepting your shitty conection";}
+	};
+
 };
 
 // Server_HPP

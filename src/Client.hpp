@@ -8,6 +8,7 @@ private:
 	std::string hostName_;
 	std::string nickName_;
 	std::string userName_;
+	//int clientSocket_;
 public:
 	// Constructors / Destructor
 	Client();

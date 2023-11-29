@@ -64,6 +64,6 @@ leaks: $(NAME)
 	leaks -atExit -- ./$(NAME)
 
 run: $(NAME)
-	./$(NAME)
+	./$(NAME) 6667 JOIN
 
 -include $(OBJS:.o=.d)
