@@ -33,6 +33,7 @@ void Server::handleNewConnection() {
 
     // Add the new client socket to the master set
     FD_SET(clientSocket, &masterSet_);
+	
 }
 
 void Server::handleData(int clientSocket) {
@@ -47,8 +48,6 @@ void Server::handleData(int clientSocket) {
         buffer[bytesRead] = '\0'; // Null-terminate the received data
         std::cout << "Received message from client: " << buffer << std::endl;
 
-        // Process the received message and respond if needed
-        // ...
     }
 }
 
@@ -127,7 +126,11 @@ void Server::init(const std::string &port, const std::string &password){
        throw SocketException();
     }
 
-	
+	int reuse = 1;
+	if (setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) == -1) {
+        
+		throw SocketException();
+    }
 
     // Set up server address struct
     serverAddress.sin_family = AF_INET;
@@ -160,7 +163,6 @@ void Server::init(const std::string &port, const std::string &password){
 			throw AcceptException();
         }
 
-	fcntl(socket_, F_SETFL, O_NONBLOCK);
 
         // Handle the client in a separate thread or process
         handleClient(clientSocket);
