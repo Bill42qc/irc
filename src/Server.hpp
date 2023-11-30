@@ -15,11 +15,17 @@
 class Server
 {
 private:
+	//variable
 	std::map<Client, std::string> clientMap_;
 	std::map<Channel, std::string> channelMap_;
 	std::string	password_;
 	int socket_;
 	uint32_t port_;
+
+	//private function
+	void createSocket();
+	void bindSocket();
+	void listenSocket();
 public:
 	// Constructors / Destructor
 	Server();

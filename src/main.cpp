@@ -11,6 +11,7 @@ int main(int argc, char **argv)
 	}
 	try{
 		server.init(argv[1], argv[2]);	
+		server.run();
 	}
 	catch(const std::exception& e){
 		std::cerr << e.what() << std::endl;
