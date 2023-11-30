@@ -1,0 +1,65 @@
+
+WEECHAT
+
+
+Connect to an IRC Server:
+
+In WeeChat, you can connect to an IRC server using the /server command. For example:
+
+/server add localhost 127.0.0.1/6667
+/connect localhost
+
+Set Connection Type to TCP:
+After adding the server, set the connection type to TCP. Use the /set command to modify the server settings:
+
+
+/set irc.server.localhost.addresses "localhost/6667"
+/set irc.server.localhost.ssl off
+Replace "example" with the name of your server. Setting ssl to off disables TLS and uses a regular TCP connection.
+
+Connect to the Server:
+Now, connect to the server using the name you assigned. For example:
+
+bash
+Copy code
+/connect example
+WeeChat will use the updated settings for this connection.
+
+
+
+
+
+
+
+Join a Channel:
+Once connected to a server, you can join a channel using the /join command. For example:
+
+/join #example_channel
+
+
+Switch between Buffers:
+WeeChat uses the concept of "buffers" to manage different chat sessions and information. You can switch between buffers using the /buffer command or by pressing Alt+Left/Right Arrow keys.
+
+
+Send Messages:
+To send messages in a channel or private message, simply start typing your message and press Enter. WeeChat uses the input bar at the bottom of the interface for entering commands and messages.
+Customize Configuration:
+
+
+WeeChat has a comprehensive configuration system that allows you to customize its behavior. You can use the /set command to configure various options. For example:
+/set irc.server.Freenode.nicks "YourNickname"
+Adjust the settings according to your preferences.
+
+
+Learn Shortcuts:
+WeeChat has many keyboard shortcuts to help you navigate and perform actions more efficiently. Pressing Alt+h opens the help window where you can find a list of available commands and shortcuts.
+Explore Plugins:
+
+
+WeeChat supports plugins that add additional features. You can explore available plugins using the /script command. For example:
+/script list
+To install a plugin, you can use /script install plugin_name.
+Read Documentation:
+
+
+WeeChat has extensive documentation that you can access within the client. Use the /help command to get help on specific commands or topics.
