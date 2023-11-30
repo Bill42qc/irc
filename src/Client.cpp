@@ -3,10 +3,9 @@
 Client::Client(){
 }
 
-Client::Client(std::string &nickName, std::string &userName, std::string &hostName, int clientSocket):hostName_(hostName), nickName_(nickName), userName_(userName), clientSocket_(clientSocket){	
-}
 
-Client::Client(int clientSocket):clientSocket_(clientSocket){	
+
+Client::Client(int clientSocket):clientSocket_(clientSocket), hasPassword_(false){	
 }
 
 Client::Client(const Client &other){

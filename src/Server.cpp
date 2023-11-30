@@ -7,45 +7,16 @@
 #include <arpa/inet.h>
 
 const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai\n";
+const int PORT = 6667;
 const int MAX_CONNECTIONS = 100;
 const int BUFFER_SIZE = 1024;
+
+fd_set masterSet_;
 
 Server::Server(){
 }
 
 Server::~Server(){
-}
-
-void handleClient(int clientSocket) {
-	char buffer[BUFFER_SIZE];
-	std::string welcomeMessage = "Welcome to the FT_IRC Server!\n";
-
-	// Send a welcome message to the client
-	send(clientSocket, welcomeMessage.c_str(), welcomeMessage.size(), 0);
-
-	while (true) {
-		// Receive data from the client
-		int bytesRead = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
-
-		if (bytesRead <= 0) {
-			std::cout << "Client disconnected." << std::endl;
-			break;
-		}
-
-		buffer[bytesRead] = '\0'; // Null-terminate the received data
-
-		// Process the received message (in this example, just echo it)
-		std::cout << "Received message from client: " << buffer << std::endl;
-
-		// Send a response back to the client
-		std::string response = "Server received your message: ";
-		response += buffer;
-		response += "\n";
-		send(clientSocket, response.c_str(), response.size(), 0);
-	}
-
-	// Close the client socket when done
-	close(clientSocket);
 }
 
 void Server::createSocket()
@@ -83,7 +54,7 @@ void Server::listenSocket(){
 		throw ListenException();
 		}
 
-	std::cout << "Server listening on port " << port_ << "..." << std::endl;
+	std::cout << "Server listening on port " << PORT << "..." << std::endl;
 }
 
 void Server::receiveNewConnection(){
@@ -113,7 +84,7 @@ void Server::handleClientInput(int i){
 
 	Client client= getClient(i);
 	int	clientSocket = client.getClientSocket();
-	char buffer[1024];
+	char buffer[BUFFER_SIZE];
 	ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
 
 	if (bytesRead > 0) {

@@ -10,11 +10,11 @@ private:
 	std::string nickName_;
 	std::string userName_;
 	int clientSocket_;
+	bool hasPassword_;
 public:
 	// Constructors / Destructor
 	Client();
 	Client(int clientSocket);
-	Client(std::string &nickName, std::string &userName, std::string &hostName, int clientSocket);
 	Client(const Client &other);
 	~Client();
 
@@ -29,6 +29,7 @@ public:
 	std::string &getNickName(){return nickName_;}
 	std::string &getUserName(){return userName_;}
 	int getClientSocket(){return clientSocket_;}
+	bool getHasPassword(){return hasPassword_;}
 	void setHostName(std::string &name){hostName_ = name;}
 	void setNickName(std::string &name){nickName_ = name;}
 	void setUserName(std::string &name){userName_ = name;}
