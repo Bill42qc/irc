@@ -66,4 +66,8 @@ leaks: $(NAME)
 run: $(NAME)
 	./$(NAME) 6667 JOIN
 
+weechat: $(NAME)
+	docker pull weechat/weechat
+	docker run -it weechat/weechat
+
 -include $(OBJS:.o=.d)

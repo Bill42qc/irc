@@ -1,0 +1,13 @@
+DOCKER
+
+
+-installer docker 
+
+-partir un terminal (peux importe l'arborescence)
+
+-entrer la commande         docker pull weechat/weechat
+
+-attendre le download et telechargement image
+ 
+-entrer la commande       docker run -it weechat/weechat       pour lancer weechat 
+

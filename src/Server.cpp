@@ -108,6 +108,7 @@ void Server::handleClientInput(int i){
 		std::cout << "Connection closed by client." << std::endl;
 		close(clientSocket);
 		removeClient(i);
+		pollfd_.erase(pollfd_.begin()+i+1);
 	} 
 	else {
 		throw RecvException();
