@@ -8,7 +8,7 @@ private:
 
 public:
 	// Constructors / Destructor
-	Invite();
+	Invite(Channel &channel, Client &sender): ACommand(channel, sender){};
 
 	~Invite();
 	// Functions

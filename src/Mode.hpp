@@ -9,7 +9,7 @@ private:
 
 public:
 	// Constructors / Destructor
-	Mode();
+	Mode(Channel &channel, Client &sender): ACommand(channel, sender){};
 	~Mode();
 	// Functions
 	void exe() const;

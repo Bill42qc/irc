@@ -1,8 +1,5 @@
 #include "Topic.hpp"
 
-Topic::Topic(): ACommand(){
-}
-
 Topic::~Topic(){
 }
 

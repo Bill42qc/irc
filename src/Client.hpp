@@ -22,7 +22,7 @@ public:
 	Client& operator=(const Client &other);
 	void	send(std::string msg);
 	// Functions
-
+	void closeSocket();
 
 	// getter setter
 	const std::string &getHostName() const{return hostName_;}

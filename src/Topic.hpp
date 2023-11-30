@@ -9,7 +9,7 @@ private:
 
 public:
 	// Constructors / Destructor
-	Topic();
+	Topic(Channel &channel, Client &sender): ACommand(channel, sender){};
 	~Topic();
 
 	// Operator Overload

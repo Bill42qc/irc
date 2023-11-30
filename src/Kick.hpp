@@ -9,7 +9,7 @@ private:
 
 public:
 	// Constructors / Destructor
-	Kick();
+	Kick(Channel &channel, Client &sender): ACommand(channel, sender){};
 	~Kick();
 
 	// Functions

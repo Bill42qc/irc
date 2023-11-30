@@ -8,7 +8,7 @@
 
 const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai\n";
 const int MAX_CONNECTIONS = 100;
-const int BUFFER_SIZE = 1024;
+const int BUFFER_SIZE = 2048;
 
 Server::Server(){
 }
@@ -67,9 +67,9 @@ void Server::receiveNewConnection(){
 		throw AcceptException();
 	}
 
-	//add the socket of the new client to the vector
 	clientfd.fd = clientSocket;
 	clientfd.events = POLLIN;
+	//add the socket of the new client to the vector
 	pollfd_.push_back(clientfd);
 
 	Client client(clientSocket);
@@ -114,12 +114,18 @@ void Server::run(){
 			throw PollException();
 		else if (result > 0) {
 			for (size_t i = 0; i < pollfd_.size(); ++i) {
-				if (pollfd_[i].revents & POLLIN) {
-					if (pollfd_[i].fd == socket_) {
-						receiveNewConnection();
-					} else {
-						handleClientInput(i - 1);
+				try {
+					if (pollfd_[i].revents & POLLIN) {
+						if (pollfd_[i].fd == socket_) {
+							receiveNewConnection();
+						} else {
+							handleClientInput(i - 1);
+						}
 					}
+				}
+				catch (std::exception &e){
+					std::cout << e.what() << std::endl;
+					removeClient(i - 1);
 				}
 			}
 		}
@@ -145,6 +151,7 @@ void Server::addClient(Client client){
 }
 
 void Server::removeClient(int i){
+	clientVector[i].closeSocket();
 	if (i >= 0 && i < static_cast<int>(clientVector.size())) 
 		 clientVector.erase(clientVector.begin() + i);
 }

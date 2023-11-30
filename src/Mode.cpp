@@ -1,8 +1,5 @@
 #include "Mode.hpp"
 
-Mode::Mode(): ACommand(){
-}
-
 Mode::~Mode(){
 }
  

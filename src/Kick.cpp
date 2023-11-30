@@ -1,7 +1,5 @@
 #include "Kick.hpp"
 
-Kick::Kick(): ACommand(){
-}
 
 Kick::~Kick(){
 }
