@@ -1,31 +1,43 @@
 
 WEECHAT
 
+https://www.linode.com/docs/guides/using-weechat-for-irc/
+
+
+ctrl+v  ctrl+m pour end line
+
+
+quickstart
+
+-ouvrir terminal type   hostname et copier coller 
+    ➜  ~ hostname
+
+        c1r1p5.42quebec.com
+
+
+dans weechat
+
+-     /server add <name> <hostname>/<port>  -notls
+
+-      /connect <name>
+
+
+-      /set to access settings
+        password et + pour changer le settings
+        user et nickname a changer les default
+        (2 client ne pouraont pas avoir les meme noms)
+
+
+/close    fermer les settings
+/exit     fermer le terminal
 
 Connect to an IRC Server:
 
 In WeeChat, you can connect to an IRC server using the /server command. For example:
 
-/server add localhost 127.0.0.1/6667
-/connect localhost
 
-Set Connection Type to TCP:
-After adding the server, set the connection type to TCP. Use the /set command to modify the server settings:
-
-
-/set irc.server.localhost.addresses "localhost/6667"
-/set irc.server.localhost.ssl off
-Replace "example" with the name of your server. Setting ssl to off disables TLS and uses a regular TCP connection.
-
-Connect to the Server:
-Now, connect to the server using the name you assigned. For example:
-
-bash
-Copy code
-/connect example
-WeeChat will use the updated settings for this connection.
-
-
+/server add loc 127.0.0.1/6667
+/connect
 
 
 
