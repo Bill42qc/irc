@@ -7,10 +7,8 @@
 #include <arpa/inet.h>
 
 const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai\n";
-const int PORT = 6667;
 const int MAX_CONNECTIONS = 100;
 const int BUFFER_SIZE = 1024;
-fd_set masterSet_;
 
 Server::Server(){
 }
@@ -56,6 +54,12 @@ void Server::createSocket()
 	if (socket_ == -1) {
 		std::cerr << "Error creating socket." << std::endl;
 	   throw SocketException();
+	int i = 1;
+	if (setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(i)))
+		throw SocketException();
+
+	if (fcntl(socket_, F_SETFL, O_NONBLOCK) == -1) 
+		throw SocketException();
 	}
 }
 
@@ -79,27 +83,78 @@ void Server::listenSocket(){
 		throw ListenException();
 		}
 
-	std::cout << "Server listening on port " << PORT << "..." << std::endl;
+	std::cout << "Server listening on port " << port_ << "..." << std::endl;
+}
+
+void Server::receiveNewConnection(){
+	int clientSocket;
+	sockaddr_in clientAddress;
+	socklen_t clientAddressSize = sizeof(clientAddress);
+	struct pollfd clientfd;
+
+	// Accept a connection from a client
+	clientSocket = accept(socket_, (struct sockaddr*)&clientAddress, &clientAddressSize);
+	if (clientSocket == -1) {
+		std::cerr << "Error accepting connection." << std::endl;
+		throw AcceptException();
+	}
+
+	//add the socket of the new client to the vector
+	clientfd.fd = clientSocket;
+	clientfd.events = POLLIN;
+	pollfd_.push_back(clientfd);
+
+	Client client(clientSocket);
+	client.send(WELCOME_MSG);
+	addClient(client);
+}
+
+void Server::handleClientInput(int i){
+
+	Client client= getClient(i);
+	int	clientSocket = client.getClientSocket();
+	char buffer[1024];
+	ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+	if (bytesRead > 0) {
+		// Process the received data
+		//this is where the fun begins 
+		std::cout << "Received data from client: " << buffer << std::endl;
+		client.send("received data : "+ std::string(buffer));
+	} 
+	else if (bytesRead == 0) {
+		// Connection closed by the client
+		std::cout << "Connection closed by client." << std::endl;
+		close(clientSocket);
+		removeClient(i);
+	} 
+	else {
+		throw RecvException();
+	}
 }
 
 void Server::run(){
-	int clientSocket;
-	sockaddr_in clientAddress;
+	struct pollfd serverfd;
+	
+	serverfd.fd = socket_;
+	serverfd.events = POLLIN;
+	pollfd_.push_back(serverfd);
 
-	// Start listening for incoming connections
-	while (true) {
-		socklen_t clientAddressSize = sizeof(clientAddress);
-
-		// Accept a connection from a client
-		clientSocket = accept(socket_, (struct sockaddr*)&clientAddress, &clientAddressSize);
-		if (clientSocket == -1) {
-			std::cerr << "Error accepting connection." << std::endl;
-			throw AcceptException();
+	while(true){
+		int	result =  poll(pollfd_.data(), pollfd_.size(), -1);
+		if (result == -1)
+			throw PollException();
+		else if (result > 0) {
+			for (size_t i = 0; i < pollfd_.size(); ++i) {
+				if (pollfd_[i].revents & POLLIN) {
+					if (pollfd_[i].fd == socket_) {
+						receiveNewConnection();
+					} else {
+						handleClientInput(i - 1);
+					}
+				}
+			}
 		}
-		Client client(clientSocket);
-		client.send(WELCOME_MSG);
-		// Handle the client in a separate thread or process
-		handleClient(clientSocket);
 	}
 }
 
@@ -117,12 +172,13 @@ void Server::init(const std::string &port, const std::string &password){
 	}
 }
 
-void Server::addClient(Client &client){
-	clientMap_.insert(std::make_pair(client, client.getHostName()));
+void Server::addClient(Client client){
+	clientVector.push_back(client);
 }
 
-void Server::removeClient(const Client &client){
-	clientMap_.erase(client);
+void Server::removeClient(int i){
+	if (i >= 0 && i < static_cast<int>(clientVector.size())) 
+		 clientVector.erase(clientVector.begin() + i);
 }
 
 void Server::createChannel(const std::string &name){
