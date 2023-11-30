@@ -25,6 +25,7 @@ Client& Client::operator=(const Client &other){
 		hostName_ = other.hostName_;
 		nickName_ = other.nickName_;
 		clientSocket_ = other.clientSocket_;
+		hasPassword_ = other.hasPassword_;
 	}
 	return *this;
 }

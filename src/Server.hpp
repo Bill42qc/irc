@@ -19,11 +19,11 @@ class Server
 private:
 	//variable
 	std::vector<Client> clientVector;
-	std::map<Channel, std::string> channelMap_;
+	std::vector<struct pollfd> pollfd_;
+	std::map<std::string, Channel> channelMap_;
 	std::string	password_;
 	int socket_;
 	uint32_t port_;
-	std::vector<struct pollfd> pollfd_;
 	//private function
 	void createSocket();
 	void bindSocket();

@@ -7,11 +7,8 @@
 #include <arpa/inet.h>
 
 const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai\n";
-const int PORT = 6667;
 const int MAX_CONNECTIONS = 100;
 const int BUFFER_SIZE = 1024;
-
-fd_set masterSet_;
 
 Server::Server(){
 }
@@ -54,7 +51,7 @@ void Server::listenSocket(){
 		throw ListenException();
 		}
 
-	std::cout << "Server listening on port " << PORT << "..." << std::endl;
+	std::cout << "Server listening on port " << port_ << "..." << std::endl;
 }
 
 void Server::receiveNewConnection(){
@@ -153,6 +150,6 @@ void Server::removeClient(int i){
 }
 
 void Server::createChannel(const std::string &name){
-	channelMap_.insert(std::make_pair(Channel(name), name));
+	channelMap_.insert(std::make_pair(name, Channel(name)));
 }
 

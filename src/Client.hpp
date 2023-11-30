@@ -25,15 +25,18 @@ public:
 
 
 	// getter setter
-	std::string &getHostName(){return hostName_;}
-	std::string &getNickName(){return nickName_;}
-	std::string &getUserName(){return userName_;}
-	int getClientSocket(){return clientSocket_;}
+	const std::string &getHostName() const{return hostName_;}
+	const std::string &getNickName() const{return nickName_;}
+	const std::string &getUserName() const{return userName_;}
+	int getClientSocket() const{return clientSocket_;}
 	bool getHasPassword(){return hasPassword_;}
 	void setHostName(std::string &name){hostName_ = name;}
 	void setNickName(std::string &name){nickName_ = name;}
 	void setUserName(std::string &name){userName_ = name;}
-	bool operator<(const Client& other) const {return (hostName_ < other.hostName_);} //overload so it can be use for map
+	void validatePassword(){hasPassword_ = true;}
+	bool operator<(const Client& other) const {return (clientSocket_ < other.clientSocket_);} //overload so it can be use for map
+	bool operator!=(const Client& other) const {return (clientSocket_ != other.clientSocket_);}//overload for iterator throw map
+
 };
 
 // Client_HPP
