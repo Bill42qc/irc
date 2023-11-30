@@ -16,6 +16,8 @@ Server::Server(){
 Server::~Server(){
 }
 
+///@brief
+//create the socket use for connection
 void Server::createSocket()
 {
 	socket_ = socket(AF_INET, SOCK_STREAM, 0);
@@ -31,6 +33,8 @@ void Server::createSocket()
 	}
 }
 
+///@brief
+//bind the socket to the ports given the the server
 void Server::bindSocket(){
 	sockaddr_in serverAddress;
 
@@ -45,6 +49,8 @@ void Server::bindSocket(){
 	}
 }
 
+///@brief
+//listen to the socket for incomming input
 void Server::listenSocket(){
 	if (listen(socket_, MAX_CONNECTIONS) == -1) {
 		close(socket_);
@@ -54,6 +60,9 @@ void Server::listenSocket(){
 	std::cout << "Server listening on port " << port_ << "..." << std::endl;
 }
 
+///@brief
+/*accept a new connection and create the socket for that connection.
+Than the socket is added into the vector of socket*/
 void Server::receiveNewConnection(){
 	int clientSocket;
 	sockaddr_in clientAddress;
@@ -77,6 +86,10 @@ void Server::receiveNewConnection(){
 	addClient(client);
 }
 
+///@brief
+//handles the data send by a socket
+///@param
+//i : the index of the client that send data
 void Server::handleClientInput(int i){
 
 	Client client= getClient(i);
@@ -101,6 +114,10 @@ void Server::handleClientInput(int i){
 	}
 }
 
+///@brief
+/*Main loop of the server
+Poll an array of fd and wait for event to happen.
+When event happen handle the data send or create new client*/
 void Server::run(){
 	struct pollfd serverfd;
 	
@@ -132,6 +149,12 @@ void Server::run(){
 	}
 }
 
+///@brief
+//init the socket needed for the server
+///@param
+//port : the port number that will be listen to
+///@param
+//password : the password needed to connect to the server
 void Server::init(const std::string &port, const std::string &password){
 	try{
 		port_ = std::stoi(port);
@@ -146,16 +169,28 @@ void Server::init(const std::string &port, const std::string &password){
 	}
 }
 
+///@brief
+//Add a client to the server
+///@param
+//client : the client added to the server
 void Server::addClient(Client client){
 	clientVector.push_back(client);
 }
 
+///@brief
+//remove a client from the server
+///@param
+//i : the index of the client in the vector
 void Server::removeClient(int i){
 	clientVector[i].closeSocket();
 	if (i >= 0 && i < static_cast<int>(clientVector.size())) 
 		 clientVector.erase(clientVector.begin() + i);
 }
 
+///@brief
+//Create a new Channel
+///@param
+//name : the name of the channel that will be created
 void Server::createChannel(const std::string &name){
 	channelMap_.insert(std::make_pair(name, Channel(name)));
 }

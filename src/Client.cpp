@@ -15,14 +15,18 @@ Client::Client(const Client &other){
 Client::~Client(){
 }
 
-
+///@brief
+//close the socket of the client
 void Client::closeSocket(){
 	if (clientSocket_)
 		close(clientSocket_);
 	clientSocket_ = 0;
 }
 
-
+///@brief
+//send a message to the client in the channel
+///@param
+// msg : message that will be send to the client
 void Client::send(std::string msg){
 	::send(clientSocket_, msg.c_str(), msg.size(), 0);
 }
