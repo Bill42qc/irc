@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <map>
 #include <unistd.h>
 #include <vector>
 #include <poll.h>
@@ -18,9 +17,9 @@ class Server
 {
 private:
 	//variable
-	std::vector<Client> clientVector;
-	std::vector<struct pollfd> pollfd_;
-	std::map<std::string, Channel> channelMap_;
+	mutable std::vector<Client> clientVector_;
+	mutable std::vector<struct pollfd> pollfd_;
+	mutable std::vector<Channel> channelVector_;
 	std::string	password_;
 	int socket_;
 	uint32_t port_;
@@ -30,20 +29,26 @@ private:
 	void listenSocket();
 	void receiveNewConnection();
 	void handleClientInput(int i);
+
+
 public:
 	// Constructors / Destructor
 	Server();
 	~Server();
 
 	// Functions
+	Channel &getChannel(std::string &name);
+	void joinChannel(std::string name, Client &client);
 	void init(const std::string &port, const std::string &password);
-	void addClient(Client client);
+	void addClient(Client &client);
 	void removeClient(int i);
-	void createChannel(const std::string &name);
+	void addChannel(Channel &channel);
 	void handleNewConnection();
 	void handleData(int clientSocket);
 	void run();
-	Client &getClient(int i){return clientVector[i];}
+
+
+	Client &getClient(int i){return clientVector_[i];}
 
 	class SocketException : public std::exception {
 	public:

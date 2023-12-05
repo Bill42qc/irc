@@ -1,6 +1,6 @@
 #include "Channel.hpp"
 
-Channel::Channel(const std::string &name): name_(name){
+Channel::Channel(const std::string &name): name_(name), userLimit_(100), isInviteOnly_(false){
 }
 
 Channel::Channel(): name_(){
@@ -9,36 +9,63 @@ Channel::Channel(): name_(){
 Channel::~Channel(){
 }
 
+Channel& Channel::operator=(const Channel &other){
+	if (this != &other) {
+		name_ = other.name_;
+		topic_ = other.topic_;
+		clientVector_ = other.clientVector_;
+		operatorVector_ = other.operatorVector_;
+		userLimit_ = other.userLimit_;
+		password_ = other.password_;
+		isInviteOnly_ = other.isInviteOnly_;
+	}
+	return *this;
+}
+
+bool Channel::operator!=(const Channel &other){
+	return (name_ != other.name_ ? true : false);
+}
+
 ///@param
-// Client client. received by ref that will be added in the map that contain the connected client
+// Client client. received by ref that will be added in the Vector that contain the connected client
 ///@brief
 //add client to the list of connected client
 void Channel::addClient(Client &client){
-	clientMap_.insert(std::make_pair(client.getClientSocket(), client));
+	clientVector_.push_back(client);;
 }
 
 ///@param
-// Client client client received by ref that will be removed in the map that contain the connected client
+// Client client client received by ref that will be removed in the Vector that contain the connected client
 ///@brief
 //remove client to the list of connected client
 void Channel::removeClient(const Client &client){
-	clientMap_.erase(client.getClientSocket());
+		for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (client == clientVector_[i]){
+			clientVector_.erase(clientVector_.begin() + i);
+			return ;
+		}
+	}
 }
 
 ///@param
-// Client client received by ref that will be added in the map that contain the list of operator
+// Client client received by ref that will be added in the Vector that contain the list of operator
 ///@brief
 //add client to the operator for the channel
 void Channel::addOperator(Client &client){
-	operatorMap_.insert(std::make_pair(client.getClientSocket(), client));
+	operatorVector_.push_back(client);;
 }
 
 ///@param
-// Client client received by ref that will be removed in the map that contain the list of operator
+// Client client received by ref that will be removed in the Vector that contain the list of operator
 ///@brief
-//removed Client form the operator map for the channel
+//removed Client form the operator Vector for the channel
 void Channel::removeOperator(Client &client){
-	operatorMap_.erase(client.getClientSocket());
+	for (unsigned long i = 0; i < operatorVector_.size(); ++i){
+		if (client == operatorVector_[i]){
+			operatorVector_.erase(operatorVector_.begin() + i);
+			return ;
+		}
+	}
 }
 
 
@@ -49,25 +76,20 @@ void Channel::removeOperator(Client &client){
 ///@return
 //true or false if the client is operator
 bool Channel::isOperator(Client &client){
-    std::map<int, Client>::const_iterator it;
-    
-    for (it = operatorMap_.begin(); it != operatorMap_.end(); ++it) {
-        if (it->second.getClientSocket() == client.getClientSocket()) {
-            return true; 
-        }
-    }
-    return false;
+
+	for (unsigned long i = 0; i < operatorVector_.size(); ++i){
+		if (client == operatorVector_[i])
+			return true;
+	}
+	return false;
 }
 
 ///@brief
 //send a message to every client in the channel
 ///@param
 // msg : message that will be send to every user
-void Channel::sendToEveryone(const std::string &msg){
-	std::map<int, Client>::iterator it;
-
-    for (it = clientMap_.begin(); it != clientMap_.end(); ++it) {
-        it->second.send(msg);
-    }
-
+void Channel::broadcastEveryone(const std::string &msg){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		clientVector_[i].send(msg);
+	}
 }

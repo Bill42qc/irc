@@ -101,7 +101,6 @@ void Server::handleClientInput(int i){
 		// Process the received data
 		//this is where the fun begins 
 		std::cout << "Received data from client: " << buffer << std::endl;
-		client.send("received data : "+ std::string(buffer));
 	} 
 	else if (bytesRead == 0) {
 		// Connection closed by the client
@@ -174,8 +173,8 @@ void Server::init(const std::string &port, const std::string &password){
 //Add a client to the server
 ///@param
 //client : the client added to the server
-void Server::addClient(Client client){
-	clientVector.push_back(client);
+void Server::addClient(Client &client){
+	clientVector_.push_back(client);
 }
 
 ///@brief
@@ -183,16 +182,40 @@ void Server::addClient(Client client){
 ///@param
 //i : the index of the client in the vector
 void Server::removeClient(int i){
-	clientVector[i].closeSocket();
-	if (i >= 0 && i < static_cast<int>(clientVector.size())) 
-		 clientVector.erase(clientVector.begin() + i);
+	clientVector_[i].closeSocket();
+	if (i >= 0 && i < static_cast<int>(clientVector_.size())) 
+		 clientVector_.erase(clientVector_.begin() + i);
 }
 
 ///@brief
-//Create a new Channel
-///@param
-//name : the name of the channel that will be created
-void Server::createChannel(const std::string &name){
-	channelMap_.insert(std::make_pair(name, Channel(name)));
+//add a channel to the map
+void Server::addChannel(Channel &channel){
+	channelVector_.push_back(channel);
 }
 
+///@brief
+//join a channel if it doesn exist create it if its not there yet
+///@param
+//name : the name of the channel that will be join 
+void Server::joinChannel(std::string name, Client &client) {
+	for (unsigned long i = 0;  i < channelVector_.size(); ++i)
+	{
+		if (channelVector_[i] == name){
+			channelVector_[i].addClient(client);
+			return ;
+		}
+	}
+
+	Channel newChannel(name);
+	newChannel.addClient(client);
+	addChannel(newChannel);
+}
+
+Channel &Server::getChannel(std::string &name){
+	for (unsigned long i = 0;  i < channelVector_.size(); ++i){
+		if (channelVector_[i] == name){
+			return channelVector_[i];
+		}
+	}
+	throw (std::runtime_error("channel does not exist"));
+}

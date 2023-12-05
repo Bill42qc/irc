@@ -20,8 +20,9 @@ public:
 
 	// Operator Overload
 	Client& operator=(const Client &other);
-	void	send(std::string msg);
+	
 	// Functions
+	void	send(std::string msg);
 	void closeSocket();
 
 	// getter setter
@@ -36,6 +37,7 @@ public:
 	void validatePassword(){hasPassword_ = true;}
 	bool operator<(const Client& other) const {return (clientSocket_ < other.clientSocket_);} //overload so it can be use for map
 	bool operator!=(const Client& other) const {return (clientSocket_ != other.clientSocket_);}//overload for iterator throw map
+	bool operator==(const Client& other) const {return (clientSocket_ == other.clientSocket_);}
 
 };
 
