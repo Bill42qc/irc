@@ -9,9 +9,7 @@
 const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai\n";
 const int MAX_CONNECTIONS = 100;
 const int BUFFER_SIZE = 2048;
-
-Server::Server(){
-}
+static bool exiting = false;
 
 Server::~Server(){
 }
@@ -86,6 +84,11 @@ void Server::receiveNewConnection(){
 	addClient(client);
 }
 
+void signalHandler(int sig){
+	(void)sig;
+	exiting = true;
+}
+
 ///@brief
 //handles the data send by a socket
 ///@param
@@ -120,14 +123,14 @@ Poll an array of fd and wait for event to happen.
 When event happen handle the data send or create new client*/
 void Server::run(){
 	struct pollfd serverfd;
-	
+	{}
 	serverfd.fd = socket_;
 	serverfd.events = POLLIN;
 	pollfd_.push_back(serverfd);
 
-	while(true){
-		int	result =  poll(pollfd_.data(), pollfd_.size(), -1);
-		if (result == -1)
+	while(exiting == false){
+		int	result =  poll(pollfd_.data(), pollfd_.size(), 50);
+		if (result == -1 && errno != EINTR) //errno check so it doesnt enter when ctrl - c
 			throw PollException();
 		else if (result > 0) {
 			for (size_t i = 0; i < pollfd_.size(); ++i) {
@@ -163,10 +166,22 @@ void Server::init(const std::string &port, const std::string &password){
 		createSocket();
 		bindSocket();
 		listenSocket();
+		signal(SIGINT, signalHandler);
 	}
 	catch (std::exception &e){
 		std::cout << e.what() << std::endl;
 	}
+}
+
+void Server::shutdown(){
+	std::cout << "shutting down server" << std::endl;
+	for (unsigned int i = 0; i < clientVector_.size(); ++i){
+		removeClient(i);
+	}
+	close(pollfd_[0].fd); //closing server socket
+
+	pollfd_.clear();
+	clientVector_.clear();
 }
 
 ///@brief

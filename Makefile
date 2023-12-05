@@ -66,6 +66,8 @@ leaks: $(NAME)
 run: $(NAME)
 	./$(NAME) 6667 JOIN
 
+nc:
+	nc 127.0.0.1 6667
 weechat: $(NAME)
 	docker pull weechat/weechat
 	docker run -it weechat/weechat
