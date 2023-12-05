@@ -162,17 +162,11 @@ void Server::run(){
 ///@param
 //password : the password needed to connect to the server
 void Server::init(const std::string &port, const std::string &password){
-	try{
 		port_ = std::stoi(port);
 		password_ = password;
-
 		createSocket();
 		bindSocket();
 		listenSocket();
-	}
-	catch (std::exception &e){
-		std::cout << e.what() << std::endl;
-	}
 }
 
 ///@brief
