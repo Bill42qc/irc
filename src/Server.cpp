@@ -95,15 +95,20 @@ void signalHandler(int sig){
 //i : the index of the client that send data
 void Server::handleClientInput(int i){
 
-	Client client= getClient(i);
+	Client &client= getClient(i);
 	int	clientSocket = client.getClientSocket();
 	char buffer[BUFFER_SIZE];
+	bzero(buffer, sizeof(buffer));
 	ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
 
 	if (bytesRead > 0) {
-		// Process the received data
-		//this is where the fun begins 
-		std::cout << "Received data from client: " << buffer << std::endl;
+		buffer[bytesRead - 1] = 0;
+		client.catMSG(buffer);
+		if (buffer[bytesRead - 2] == 13){
+			buffer[bytesRead - 2] = 0;
+			std::cout << "Received data from client: " << client.getMSG() << std::endl;
+			client.resetMSG();
+		}
 	} 
 	else if (bytesRead == 0) {
 		// Connection closed by the client
@@ -159,18 +164,11 @@ void Server::run(){
 ///@param
 //password : the password needed to connect to the server
 void Server::init(const std::string &port, const std::string &password){
-	try{
-		port_ = std::stoi(port);
-		password_ = password;
-
-		createSocket();
-		bindSocket();
-		listenSocket();
-		signal(SIGINT, signalHandler);
-	}
-	catch (std::exception &e){
-		std::cout << e.what() << std::endl;
-	}
+	port_ = std::stoi(port);
+	password_ = password;
+	createSocket();
+	bindSocket();
+	listenSocket();
 }
 
 void Server::shutdown(){
