@@ -11,6 +11,9 @@ const int MAX_CONNECTIONS = 100;
 const int BUFFER_SIZE = 2048;
 static bool exiting = false;
 
+Server::Server(){
+}
+
 Server::~Server(){
 }
 
@@ -169,6 +172,7 @@ void Server::init(const std::string &port, const std::string &password){
 	createSocket();
 	bindSocket();
 	listenSocket();
+	signal(SIGINT, signalHandler);
 }
 
 void Server::shutdown(){

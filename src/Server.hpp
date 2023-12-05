@@ -32,7 +32,7 @@ private:
 	void sigHandler();
 public:
 	// Constructors / Destructor
-	Server(){}
+	Server();
 	~Server();
 
 	// Functions
