@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	try{
-		server.init(argv[1], argv[2]);	
+		server.init(argv[1], argv[2]);
 		server.run();
 	}
 	catch(const std::exception& e){

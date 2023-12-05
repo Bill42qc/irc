@@ -28,7 +28,7 @@ void Server::createSocket()
 	if (setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &i, sizeof(i)))
 		throw SocketException();
 
-	if (fcntl(socket_, F_SETFL, O_NONBLOCK) == -1) 
+	if (fcntl(socket_, F_SETFL, O_NONBLOCK) == -1)
 		throw SocketException();
 	}
 }
@@ -83,6 +83,7 @@ void Server::receiveNewConnection(){
 
 	Client client(clientSocket);
 	client.send(WELCOME_MSG);
+	client.send("AUTHENTICATE\n");
 	addClient(client);
 }
 
@@ -92,23 +93,28 @@ void Server::receiveNewConnection(){
 //i : the index of the client that send data
 void Server::handleClientInput(int i){
 
-	Client client= getClient(i);
+	Client &client = getClient(i);
 	int	clientSocket = client.getClientSocket();
 	char buffer[BUFFER_SIZE];
+	bzero(buffer, BUFFER_SIZE);
 	ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
 
 	if (bytesRead > 0) {
-		// Process the received data
-		//this is where the fun begins 
-		std::cout << "Received data from client: " << buffer << std::endl;
-	} 
+			buffer[bytesRead - 1] = 0;
+			client.catMSG(buffer);
+			if (buffer[bytesRead -2] == 13) {
+				std::cout << "Received data from client: " << client.getMSG() << std::endl;
+				client.resetMSG();
+			}
+
+	}
 	else if (bytesRead == 0) {
 		// Connection closed by the client
 		std::cout << "Connection closed by client." << std::endl;
 		close(clientSocket);
 		removeClient(i);
 		pollfd_.erase(pollfd_.begin()+i+1);
-	} 
+	}
 	else {
 		throw RecvException();
 	}
@@ -120,7 +126,7 @@ Poll an array of fd and wait for event to happen.
 When event happen handle the data send or create new client*/
 void Server::run(){
 	struct pollfd serverfd;
-	
+
 	serverfd.fd = socket_;
 	serverfd.events = POLLIN;
 	pollfd_.push_back(serverfd);
@@ -183,7 +189,7 @@ void Server::addClient(Client &client){
 //i : the index of the client in the vector
 void Server::removeClient(int i){
 	clientVector_[i].closeSocket();
-	if (i >= 0 && i < static_cast<int>(clientVector_.size())) 
+	if (i >= 0 && i < static_cast<int>(clientVector_.size()))
 		 clientVector_.erase(clientVector_.begin() + i);
 }
 
@@ -196,7 +202,7 @@ void Server::addChannel(Channel &channel){
 ///@brief
 //join a channel if it doesn exist create it if its not there yet
 ///@param
-//name : the name of the channel that will be join 
+//name : the name of the channel that will be join
 void Server::joinChannel(std::string name, Client &client) {
 	for (unsigned long i = 0;  i < channelVector_.size(); ++i)
 	{

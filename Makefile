@@ -8,7 +8,7 @@
 
 # Compiler and flags
 CC		=	c++
-CFLAGS	=	-Wall -Werror -Wextra -std=c++98 
+CFLAGS	=	-Wall -Werror -Wextra -std=c++98
 RM		=	rm -f
 MAKE	=	make
 
@@ -34,7 +34,6 @@ GREEN	=	\033[38;5;46m
 RESET	=	\033[0m
 
 
-$(shell mkdir -p $(OBJS_DIR))
 #------------------------------------------------------------------------------#
 #                                 TARGETS                                      #
 #------------------------------------------------------------------------------#
@@ -42,10 +41,11 @@ $(shell mkdir -p $(OBJS_DIR))
 all: $(NAME)
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
+	$(shell mkdir -p $(OBJS_DIR))
 	$(CC) $(CFLAGS) -c -o $@ $< -MMD
 
 # Generates output file
-$(NAME): $(OBJS) 
+$(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Removes objects
