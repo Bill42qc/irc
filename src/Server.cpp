@@ -208,11 +208,13 @@ void Server::removeClient(int i){
 		 clientVector_.erase(clientVector_.begin() + i);
 }
 
+
 ///@brief
 //add a channel to the map
 void Server::addChannel(Channel &channel){
 	channelVector_.push_back(channel);
 }
+
 
 ///@brief
 //join a channel if it doesn exist create it if its not there yet
