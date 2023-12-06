@@ -23,7 +23,8 @@ SRCS	=	main.cpp \
 			Kick.cpp \
 			Mode.cpp \
 			Server.cpp \
-			Topic.cpp
+			Topic.cpp \
+			utility.cpp
 SRCS_DIR = src
 # Objects are all .o files
 OBJS_DIR	=	bin

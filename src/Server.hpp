@@ -20,6 +20,8 @@ private:
 	std::vector<Client> clientVector_;
 	std::vector<struct pollfd> pollfd_;
 	std::vector<Channel> channelVector_;
+	//vecteur de la commande recu
+	std::vector<std::string> command_;
 	std::string	password_;
 	int socket_;
 	uint32_t port_;
@@ -36,7 +38,7 @@ public:
 	~Server();
 
 	// Functions
-	
+
 	Channel &getChannel(std::string &name);
 	void shutdown();
 	void joinChannel(std::string name, Client &client);
@@ -45,6 +47,7 @@ public:
 	void removeClient(int i);
 	void addChannel(Channel &channel);
 	void handleNewConnection();
+	void parsMsg(std::string const &recept); //remplit le vecteur et pars le vecteur
 	void handleData(int clientSocket);
 	void run();
 

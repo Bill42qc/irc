@@ -5,6 +5,7 @@
 #include <vector>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include "utility.hpp"
 
 const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai\n";
 const int MAX_CONNECTIONS = 100;
@@ -111,6 +112,7 @@ void Server::handleClientInput(int i){
 		if (buffer[bytesRead - 2] == 13){
 			buffer[bytesRead - 2] = 0;
 			std::cout << "Received data from client: " << client.getMSG() << std::endl;
+			parsMsg(client.getMSG());
 			client.resetMSG();
 		}
 	}
@@ -237,4 +239,13 @@ Channel &Server::getChannel(std::string &name){
 		}
 	}
 	throw (std::runtime_error("channel does not exist"));
+}
+
+
+void Server::parsMsg(std::string const &recept)
+{
+	command_ = splitString(recept, 32);
+	for (size_t i = 0; i < command_.size(); i++)
+		std::cout << command_[i] << std::endl;
+	//a dev pour le parsing
 }
