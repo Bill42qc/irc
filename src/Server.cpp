@@ -9,6 +9,7 @@
 const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai\n";
 const int MAX_CONNECTIONS = 100;
 const int BUFFER_SIZE = 2048;
+static bool exiting = false;
 
 Server::Server(){
 }
@@ -87,6 +88,11 @@ void Server::receiveNewConnection(){
 	addClient(client);
 }
 
+void signalHandler(int sig){
+	(void)sig;
+	exiting = true;
+}
+
 ///@brief
 //handles the data send by a socket
 ///@param
@@ -96,17 +102,13 @@ void Server::handleClientInput(int i){
 	Client &client = getClient(i);
 	int	clientSocket = client.getClientSocket();
 	char buffer[BUFFER_SIZE];
-	bzero(buffer, BUFFER_SIZE);
+	bzero(buffer, sizeof(buffer));
 	ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
 
 	if (bytesRead > 0) {
-			buffer[bytesRead - 1] = 0;
-			client.catMSG(buffer);
-			if (buffer[bytesRead -2] == 13) {
-				std::cout << "Received data from client: " << client.getMSG() << std::endl;
-				client.resetMSG();
-			}
-
+		// Process the received data
+		//this is where the fun begins
+		std::cout << "Received data from client: " << buffer << std::endl;
 	}
 	else if (bytesRead == 0) {
 		// Connection closed by the client
@@ -127,13 +129,14 @@ When event happen handle the data send or create new client*/
 void Server::run(){
 	struct pollfd serverfd;
 
+	{}
 	serverfd.fd = socket_;
 	serverfd.events = POLLIN;
 	pollfd_.push_back(serverfd);
 
-	while(true){
-		int	result =  poll(pollfd_.data(), pollfd_.size(), -1);
-		if (result == -1)
+	while(exiting == false){
+		int	result =  poll(pollfd_.data(), pollfd_.size(), 50);
+		if (result == -1 && errno != EINTR) //errno check so it doesnt enter when ctrl - c
 			throw PollException();
 		else if (result > 0) {
 			for (size_t i = 0; i < pollfd_.size(); ++i) {
@@ -162,11 +165,23 @@ void Server::run(){
 ///@param
 //password : the password needed to connect to the server
 void Server::init(const std::string &port, const std::string &password){
-		port_ = std::stoi(port);
-		password_ = password;
-		createSocket();
-		bindSocket();
-		listenSocket();
+	port_ = std::stoi(port);
+	password_ = password;
+	createSocket();
+	bindSocket();
+	listenSocket();
+	signal(SIGINT, signalHandler);
+}
+
+void Server::shutdown(){
+	std::cout << "shutting down server" << std::endl;
+	for (unsigned int i = 0; i < clientVector_.size(); ++i){
+		removeClient(i);
+	}
+	close(pollfd_[0].fd); //closing server socket
+
+	pollfd_.clear();
+	clientVector_.clear();
 }
 
 ///@brief

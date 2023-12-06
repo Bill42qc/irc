@@ -7,6 +7,7 @@ class Client
 {
 private:
 	std::string hostName_;
+	std::string msg_;
 	std::string nickName_;
 	std::string userName_;
 	std::string msg_;
@@ -42,6 +43,9 @@ public:
 	bool operator<(const Client& other) const {return (clientSocket_ < other.clientSocket_);} //overload so it can be use for map
 	bool operator!=(const Client& other) const {return (clientSocket_ != other.clientSocket_);}//overload for iterator throw map
 	bool operator==(const Client& other) const {return (clientSocket_ == other.clientSocket_);}
+	const std::string &getMSG() const {return msg_;}
+	void resetMSG() {msg_ = "";}
+	void catMSG(const std::string &msg) {msg_ = msg_ + msg;}
 
 };
 

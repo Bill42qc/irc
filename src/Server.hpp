@@ -17,9 +17,9 @@ class Server
 {
 private:
 	//variable
-	mutable std::vector<Client> clientVector_;
-	mutable std::vector<struct pollfd> pollfd_;
-	mutable std::vector<Channel> channelVector_;
+	std::vector<Client> clientVector_;
+	std::vector<struct pollfd> pollfd_;
+	std::vector<Channel> channelVector_;
 	std::string	password_;
 	int socket_;
 	uint32_t port_;
@@ -29,15 +29,16 @@ private:
 	void listenSocket();
 	void receiveNewConnection();
 	void handleClientInput(int i);
-
-
+	void sigHandler();
 public:
 	// Constructors / Destructor
 	Server();
 	~Server();
 
 	// Functions
+	
 	Channel &getChannel(std::string &name);
+	void shutdown();
 	void joinChannel(std::string name, Client &client);
 	void init(const std::string &port, const std::string &password);
 	void addClient(Client &client);
@@ -79,7 +80,6 @@ public:
 	public:
 		const char* what() const throw(){return "error receiving the User Input";}
 	};
-
 };
 
 // Server_HPP
