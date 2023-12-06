@@ -32,6 +32,14 @@ dans weechat
 /exit     fermer le terminal
 
 
+
+NICKNAME AND USER
+
+/nick <nickname>
+/user <user>
+
+
+
 Join a Channel:
 Once connected to a server, you can join a channel using the /join command. For example:
 

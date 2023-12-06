@@ -247,3 +247,23 @@ Channel &Server::getChannel(std::string &name){
 	}
 	throw (std::runtime_error("channel does not exist"));
 }
+
+void Server::broadcastMessage(const std::string& message, Client &client) {
+    for (size_t i = 0; i < clientVector_.size(); ++i) {
+        if (client != clientVector_[i]) {
+            // Send the message to all clients except the sender
+            clientVector_[i].send(client.getUserName() + ": ");
+            clientVector_[i].send(message);
+			clientVector_[i].send("\n");
+        }
+    }
+}
+
+
+void Server::parsMsg(std::string const &recept)
+{
+	command_ = splitString(recept, 32);
+	for (size_t i = 0; i < command_.size(); i++)
+		std::cout << command_[i] << std::endl;
+	//a dev pour le parsing
+}
