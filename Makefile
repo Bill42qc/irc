@@ -65,7 +65,7 @@ leaks: $(NAME)
 	leaks -atExit -- ./$(NAME)
 
 run: $(NAME)
-	./$(NAME) 6667 JOIN
+	./$(NAME) 6667 PASSWORD
 
 nc:
 	nc 127.0.0.1 6667

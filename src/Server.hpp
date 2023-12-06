@@ -43,6 +43,7 @@ public:
 	void shutdown();
 	void joinChannel(std::string name, Client &client);
 	void init(const std::string &port, const std::string &password);
+	void broadcastMessage(const std::string& message, Client &client);
 	void addClient(Client &client);
 	void removeClient(int i);
 	void addChannel(Channel &channel);

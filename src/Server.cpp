@@ -112,6 +112,10 @@ void Server::handleClientInput(int i){
 		if (buffer[bytesRead - 2] == 13){
 			buffer[bytesRead - 2] = 0;
 			std::cout << "Received data from client: " << client.getMSG() << std::endl;
+
+			 // Broadcast the message to all clients except the sender
+            broadcastMessage(client.getMSG(), client);
+
 			parsMsg(client.getMSG());
 			client.resetMSG();
 		}
@@ -161,6 +165,7 @@ void Server::run(){
 				}
 			}
 		}
+
 	}
 }
 
@@ -241,13 +246,4 @@ Channel &Server::getChannel(std::string &name){
 		}
 	}
 	throw (std::runtime_error("channel does not exist"));
-}
-
-
-void Server::parsMsg(std::string const &recept)
-{
-	command_ = splitString(recept, 32);
-	for (size_t i = 0; i < command_.size(); i++)
-		std::cout << command_[i] << std::endl;
-	//a dev pour le parsing
 }
