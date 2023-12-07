@@ -57,6 +57,7 @@ public:
 	void handleNewConnection();
 	void parsMsg(std::string const &recept); //remplit le vecteur et pars le vecteur
 	void handleData(int clientSocket);
+	void handlePing(Client &client);
 	void run();
 	Client &getClientByHostName(std::string name);
 	Client &getClientByUserName(std::string name);

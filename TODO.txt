@@ -2,4 +2,4 @@ Liste des choses a faire
 
 [Bill] faire en sorte que le server et le client communique en PING - PONG
 [Romain] faire la liste des messages retour du serveur au client
-[] parser la commande que le serveur recoi
+[] parser la commande que le serveur recoit

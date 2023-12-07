@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai\n";
+const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai";
 const int MAX_CONNECTIONS = 100;
 const int BUFFER_SIZE = 2048;
 static bool exiting = false;
@@ -77,8 +77,11 @@ void Server::receiveNewConnection(){
 	pollfd_.push_back(clientfd);
 
 	Client client(clientSocket);
-	client.send(WELCOME_MSG);
-	client.send("AUTHENTICATE\n");
+	client.send("authenticate placeholder \r\n");
+	// Send the RPL_WELCOME (001) message to the client
+    const char* welcomeMessage = ":127.0.0.1 001 MyNickname :Welcome to the IRC server, MyNickname!user@host\r\n";
+    send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
+	//client.send(WELCOME_MSG);
 	addClient(client);
 }
 
@@ -99,6 +102,7 @@ void Server::handleClientInput(int i){
 	bzero(buffer, sizeof(buffer));
 	ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
 
+	
 	if (bytesRead > 0) {
 		bool hasNL = (buffer[bytesRead - 1] == '\n'? true : false);
 		if (hasNL)
@@ -107,6 +111,7 @@ void Server::handleClientInput(int i){
 		if (buffer[bytesRead - 2] == 13 && hasNL){
 			client.rmCarReturnMSG(); //remove the charriot return (\r) so its easier to parse
 			std::cout << "Received data from client: " << client.getMSG() << std::endl;
+<<<<<<< HEAD
 			// Broadcast the message to all clients except the sender
 			//parsMsg(client.getMSG());
 			try {
@@ -114,6 +119,15 @@ void Server::handleClientInput(int i){
 				cmd->exe();
 				delete (cmd);
 			} catch (std::exception &e){}//doing nothing is fine here we just stop doing useless stuff
+=======
+
+		if (buffer[0] == 'P' && buffer[1] == 'I' && buffer[2] == 'N' && buffer[3] == 'G')
+			handlePing(client); // Check for PING messages and send PONG responses
+			 // Broadcast the message to all clients except the sender
+            broadcastMessage(client.getMSG(), client);
+
+			parsMsg(client.getMSG());
+>>>>>>> 84b8f42442957350fd8837ffe4e5bd1e81d39fef
 			client.resetMSG();
 		}
 	}
@@ -141,29 +155,29 @@ void Server::run(){
 	serverfd.events = POLLIN;
 	pollfd_.push_back(serverfd);
 
-	while(exiting == false){
-		int	result =  poll(pollfd_.data(), pollfd_.size(), 50);
-		if (result == -1 && errno != EINTR) //errno check so it doesnt enter when ctrl - c
-			throw PollException();
-		else if (result > 0) {
-			for (size_t i = 0; i < pollfd_.size(); ++i) {
-				try {
-					if (pollfd_[i].revents & POLLIN) {
-						if (pollfd_[i].fd == socket_) {
-							receiveNewConnection();
-						} else {
-							handleClientInput(i - 1);
-						}
-					}
-				}
-				catch (std::exception &e){
-					std::cout << e.what() << std::endl;
-					removeClient(i - 1);
-				}
-			}
-		}
-
-	}
+	while (exiting == false) {
+        int result = poll(pollfd_.data(), pollfd_.size(), 50);
+        if (result == -1 && errno != EINTR)
+            throw PollException();
+        else if (result > 0) {
+            for (size_t i = 0; i < pollfd_.size(); ++i) {
+                try {
+                    if (pollfd_[i].revents & POLLIN) {
+    					if (pollfd_[i].fd == socket_) {
+      						receiveNewConnection();
+							}
+						else {
+            				handleClientInput(i - 1);
+        }
+    }
+}
+                catch (std::exception& e) {
+                std::cout << e.what() << std::endl;
+                removeClient(i - 1);
+                }
+            }
+        }
+    }
 }
 
 ///@brief
@@ -265,6 +279,7 @@ void Server::parsMsg(std::string const &recept)
 	//a dev pour le parsing
 }
 
+<<<<<<< HEAD
 ACommand *Server::commandFactory(std::string str, Client &client, Channel &channel){
 	if (str == "JOIN"){ //pour tester
 		channel.addClient(client);
@@ -307,3 +322,19 @@ Client &Server::getClientByNickName(std::string name){
 	}
 	throw std::runtime_error("Client not found");
 }
+=======
+
+void Server::handlePing(Client &client) {
+    std::string message = client.getMSG();
+
+        // Extract the PING message content
+        std::string pingContent = message.substr(5);
+
+        // Send a PONG response back to the client
+        std::string pongResponse = "PONG " + pingContent + "\r\n";
+        client.send(pongResponse);
+
+        std::cout << "Sent PONG to client: " << client.getUserName() << std::endl;
+    
+}
+>>>>>>> 84b8f42442957350fd8837ffe4e5bd1e81d39fef
