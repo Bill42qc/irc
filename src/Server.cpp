@@ -100,10 +100,12 @@ void Server::handleClientInput(int i){
 	ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
 
 	if (bytesRead > 0) {
-		buffer[bytesRead - 1] = 0;
+		bool hasNL = (buffer[bytesRead - 1] == '\n'? true : false);
+		if (hasNL)
+			buffer[bytesRead - 1] = 0;
 		client.catMSG(buffer);
-		if (buffer[bytesRead - 2] == 13){
-			client.rmCarReturnMSG(); //remove the charriot carriage (\r) so its easier to parse
+		if (buffer[bytesRead - 2] == 13 && hasNL){
+			client.rmCarReturnMSG(); //remove the charriot return (\r) so its easier to parse
 			std::cout << "Received data from client: " << client.getMSG() << std::endl;
 			// Broadcast the message to all clients except the sender
 			//parsMsg(client.getMSG());
@@ -128,9 +130,9 @@ void Server::handleClientInput(int i){
 }
 
 ///@brief
-/*Main loop of the server
-Poll an array of fd and wait for event to happen.
-When event happen handle the data send or create new client*/
+//Main loop of the server
+//Poll an array of fd and wait for event to happen.
+//When event happen handle the data send or create new client
 void Server::run(){
 	struct pollfd serverfd;
 
@@ -279,4 +281,29 @@ ACommand *Server::commandFactory(std::string str, Client &client, Channel &chann
 
 	std::cout << "str is :" << str << std::endl;
 	throw std::runtime_error("banana"); //do other stuff but for the time being this is fine
+}
+
+Client &Server::getClientByHostName(std::string name){
+		for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getHostName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");
+
+}
+
+Client &Server::getClientByUserName(std::string name){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getUserName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");
+}
+
+Client &Server::getClientByNickName(std::string name){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getNickName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");
 }

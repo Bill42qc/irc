@@ -14,6 +14,7 @@ private:
 	std::string password_;
 	std::vector<Client> clientVector_;
 	std::vector<Client> operatorVector_;
+	std::vector<Client> InviteList_;
 	int	userLimit_;
 	bool isInviteOnly_;
 	bool needPassword_;
@@ -26,12 +27,16 @@ public:
 	bool operator!=(const Channel &other);
 	// Functions
 	void addClient(Client &client);
+	void joinChannel(Client &client);
+	void joinChannel(Client &client,const std::string &password);
 	void removeClient(const Client &client);
 	void addOperator(Client &client);
 	void removeOperator(Client &client);
 	bool isOperator(Client &client);
+	bool isOnInviteList(Client &client);
 	void broadcastEveryone(const std::string &msg);
 	void broadcastEveryoneElse(const std::string &msg, Client &sender);
+	void addInviteList(Client &invite);
 	Client &getClientByHostName(std::string name);
 	Client &getClientByUserName(std::string name);
 	Client &getClientByNickName(std::string name);

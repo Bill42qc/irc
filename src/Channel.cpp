@@ -39,7 +39,7 @@ void Channel::addClient(Client &client){
 ///@brief
 //remove client to the list of connected client
 void Channel::removeClient(const Client &client){
-		for (unsigned long i = 0; i < clientVector_.size(); ++i){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
 		if (client == clientVector_[i]){
 			clientVector_.erase(clientVector_.begin() + i);
 			return ;
@@ -76,7 +76,6 @@ void Channel::removeOperator(Client &client){
 ///@return
 //true or false if the client is operator
 bool Channel::isOperator(Client &client){
-
 	for (unsigned long i = 0; i < operatorVector_.size(); ++i){
 		if (client == operatorVector_[i])
 			return true;
@@ -130,4 +129,30 @@ Client &Channel::getClientByNickName(std::string name){
 			return clientVector_[i];
 	}
 	throw std::runtime_error("Client not found");
+}
+
+
+void Channel::joinChannel(Client &client){
+	if (!needPassword_)
+		addClient(client);
+	throw std::runtime_error("need password");
+
+}
+
+void Channel::joinChannel(Client &client,const std::string &password){
+	if (password == password_)
+
+	addClient(client);
+}
+
+void Channel::addInviteList(Client &invite){
+		InviteList_.push_back();
+}
+
+bool isOnInviteList(Client &client){
+	for (unsigned long i = 0; i < operatorVector_.size(); ++i){
+		if (client == operatorVector_[i])
+			return true;
+	}
+	return false;
 }

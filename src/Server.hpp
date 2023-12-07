@@ -58,6 +58,10 @@ public:
 	void parsMsg(std::string const &recept); //remplit le vecteur et pars le vecteur
 	void handleData(int clientSocket);
 	void run();
+	Client &getClientByHostName(std::string name);
+	Client &getClientByUserName(std::string name);
+	Client &getClientByNickName(std::string name);
+
 
 	ACommand *commandFactory(std::string str, Client &client, Channel &channel);
 
