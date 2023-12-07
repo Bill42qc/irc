@@ -84,8 +84,8 @@ void Server::receiveNewConnection(){
 	pollfd_.push_back(clientfd);
 
 	Client client(clientSocket);
-	client.send(WELCOME_MSG);
-	client.send("AUTHENTICATE\n");
+	// client.send(WELCOME_MSG);
+	// client.send("AUTHENTICATE\n");
 	addClient(client);
 }
 
@@ -116,7 +116,7 @@ void Server::handleClientInput(int i){
 			 // Broadcast the message to all clients except the sender
             broadcastMessage(client.getMSG(), client);
 
-			parsMsg(client.getMSG());
+			// parsMsg(client.getMSG());
 			client.resetMSG();
 		}
 	}
