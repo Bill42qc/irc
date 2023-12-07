@@ -42,8 +42,8 @@ QUICKSTART ULTIME
 
 
 
-NICKNAME AND USER
-
+AUTHENTIFICATE
+/set irc.server.<server_name>.password <your_password>
 /nick <nickname>
 /user <user>
 
@@ -53,6 +53,18 @@ Join a Channel:
 Once connected to a server, you can join a channel using the /join command. For example:
 
 /join #example_channel
+
+
+
+WeeChat, like other IRC clients, expects various numeric responses from the IRC server after sending the authentication credentials. The specific numeric codes can vary depending on the server and the authentication process.
+
+Common numeric responses related to authentication include:
+
+001 - RPL_WELCOME: Indicates a successful connection and authentication. The server sends a welcome message.
+433 - ERR_NICKNAMEINUSE: Indicates that the chosen nickname is already in use. You may need to choose a different nickname.
+464 - ERR_PASSWDMISMATCH: Indicates a password mismatch or incorrect password.
+465 - ERR_YOUREBANNEDCREEP: Indicates that you are banned from the server.
+
 
 
 Switch between Buffers:
