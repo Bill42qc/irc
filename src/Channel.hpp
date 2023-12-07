@@ -4,6 +4,8 @@
 #include "Client.hpp"
 #include <iostream>
 
+class Client;
+
 class Channel
 {
 private:
@@ -29,6 +31,9 @@ public:
 	bool isOperator(Client &client);
 	void broadcastEveryone(const std::string &msg);
 	void broadcastEveryoneElse(const std::string &msg, Client &sender);
+	Client &getClientByHostName(std::string name);
+	Client &getClientByUserName(std::string name);
+	Client &getClientByNickName(std::string name);
 
 	//inline function
 	void setUserLimit(int limit){userLimit_ = limit;}

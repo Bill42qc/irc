@@ -278,5 +278,5 @@ ACommand *Server::commandFactory(std::string str, Client &client, Channel &chann
 		return (new Mode(channel, client));
 
 	std::cout << "str is :" << str << std::endl;
-	throw std::runtime_error(str); //do other stuff but for the time being this is fine
+	throw std::runtime_error("banana"); //do other stuff but for the time being this is fine
 }

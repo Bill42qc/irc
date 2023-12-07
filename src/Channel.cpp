@@ -106,3 +106,28 @@ void Channel::broadcastEveryoneElse(const std::string &msg, Client &sender){
 			clientVector_[i].send(msg);
 	}
 }
+
+Client &Channel::getClientByHostName(std::string name){
+		for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getHostName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");
+
+}
+
+Client &Channel::getClientByUserName(std::string name){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getUserName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");
+}
+
+Client &Channel::getClientByNickName(std::string name){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getNickName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");
+}
