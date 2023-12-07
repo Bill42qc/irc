@@ -111,23 +111,16 @@ void Server::handleClientInput(int i){
 		if (buffer[bytesRead - 2] == 13 && hasNL){
 			client.rmCarReturnMSG(); //remove the charriot return (\r) so its easier to parse
 			std::cout << "Received data from client: " << client.getMSG() << std::endl;
-<<<<<<< HEAD
-			// Broadcast the message to all clients except the sender
-			//parsMsg(client.getMSG());
+		
+		if (buffer[0] == 'P' && buffer[1] == 'I' && buffer[2] == 'N' && buffer[3] == 'G')
+			handlePing(client); // Check for PING messages and send PONG responses
+
+			parsMsg(client.getMSG());
 			try {
 				ACommand *cmd = commandFactory(client.getMSG(), client, channelVector_[0]);
 				cmd->exe();
 				delete (cmd);
 			} catch (std::exception &e){}//doing nothing is fine here we just stop doing useless stuff
-=======
-
-		if (buffer[0] == 'P' && buffer[1] == 'I' && buffer[2] == 'N' && buffer[3] == 'G')
-			handlePing(client); // Check for PING messages and send PONG responses
-			 // Broadcast the message to all clients except the sender
-            broadcastMessage(client.getMSG(), client);
-
-			parsMsg(client.getMSG());
->>>>>>> 84b8f42442957350fd8837ffe4e5bd1e81d39fef
 			client.resetMSG();
 		}
 	}
@@ -279,7 +272,6 @@ void Server::parsMsg(std::string const &recept)
 	//a dev pour le parsing
 }
 
-<<<<<<< HEAD
 ACommand *Server::commandFactory(std::string str, Client &client, Channel &channel){
 	if (str == "JOIN"){ //pour tester
 		channel.addClient(client);
@@ -322,7 +314,6 @@ Client &Server::getClientByNickName(std::string name){
 	}
 	throw std::runtime_error("Client not found");
 }
-=======
 
 void Server::handlePing(Client &client) {
     std::string message = client.getMSG();
@@ -334,7 +325,6 @@ void Server::handlePing(Client &client) {
         std::string pongResponse = "PONG " + pingContent + "\r\n";
         client.send(pongResponse);
 
-        std::cout << "Sent PONG to client: " << client.getUserName() << std::endl;
+        std::cout << "Sent PONG to client: " << client.getUserName() << pongResponse << std::endl;
     
 }
->>>>>>> 84b8f42442957350fd8837ffe4e5bd1e81d39fef

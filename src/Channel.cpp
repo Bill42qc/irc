@@ -146,12 +146,12 @@ void Channel::joinChannel(Client &client,const std::string &password){
 }
 
 void Channel::addInviteList(Client &invite){
-		InviteList_.push_back();
+		InviteList_.push_back(invite);
 }
 
-bool isOnInviteList(Client &client){
-	for (unsigned long i = 0; i < operatorVector_.size(); ++i){
-		if (client == operatorVector_[i])
+bool Channel::isOnInviteList(Client &client){
+	for (unsigned long i = 0; i < InviteList_.size(); ++i){
+		if (client == InviteList_[i])
 			return true;
 	}
 	return false;
