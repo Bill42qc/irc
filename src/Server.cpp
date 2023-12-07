@@ -103,13 +103,15 @@ void Server::handleClientInput(int i){
 		buffer[bytesRead - 1] = 0;
 		client.catMSG(buffer);
 		if (buffer[bytesRead - 2] == 13){
-			buffer[bytesRead - 2] = 0;
+			client.rmCarReturnMSG(); //remove the charriot carriage (\r) so its easier to parse
 			std::cout << "Received data from client: " << client.getMSG() << std::endl;
-			 // Broadcast the message to all clients except the sender
+			// Broadcast the message to all clients except the sender
 			//parsMsg(client.getMSG());
-			ACommand *cmd = commandFactory("MODE", client, channelVector_[0]);
-			if (cmd)
+			try {
+				ACommand *cmd = commandFactory(client.getMSG(), client, channelVector_[0]);
 				cmd->exe();
+				delete (cmd);
+			} catch (std::exception &e){}//doing nothing is fine here we just stop doing useless stuff
 			client.resetMSG();
 		}
 	}
@@ -262,7 +264,11 @@ void Server::parsMsg(std::string const &recept)
 }
 
 ACommand *Server::commandFactory(std::string str, Client &client, Channel &channel){
-	if (str == "Topic")
+	if (str == "JOIN"){ //pour tester
+		channel.addClient(client);
+		client.send("welcome into test channel\n");
+	}
+	if (str == "TOPIC")
 		return (new Topic(channel, client));
 	if (str == "KICK")
 		return (new Kick(channel, client));
@@ -270,4 +276,7 @@ ACommand *Server::commandFactory(std::string str, Client &client, Channel &chann
 		return (new Invite(channel, client));
 	if (str == "MODE")
 		return (new Mode(channel, client));
+
+	std::cout << "str is :" << str << std::endl;
+	throw std::runtime_error(str); //do other stuff but for the time being this is fine
 }

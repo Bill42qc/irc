@@ -11,8 +11,8 @@ void Kick::exe() const
 {
 	if (channel_.isOperator(sender_))
 	{
+		sender_.send("you kicking " + kick_.getHostName());
 		channel_.removeClient(kick_);
-		sender_.send("Fu.. Y..");
 		channel_.broadcastEveryone(kick_.getNickName() + "a été ban");
 	}
 }

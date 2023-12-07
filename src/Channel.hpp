@@ -28,12 +28,14 @@ public:
 	void removeOperator(Client &client);
 	bool isOperator(Client &client);
 	void broadcastEveryone(const std::string &msg);
+	void broadcastEveryoneElse(const std::string &msg, Client &sender);
 
 	//inline function
 	void setUserLimit(int limit){userLimit_ = limit;}
 	void setInviteOnly(bool flag){isInviteOnly_ = flag;}
 	void setPassword(std::string password){password_ = password;}
 	void setTopic(std::string topic){topic_ = topic;}
+	std::string &getTopic(){return topic_;}
 	bool enterPassword(std::string password){return (password == password_ ? true : false);}
 	std::string &getName() {return name_;}
 	bool operator<(const Channel& other) const {return (name_ < other.name_);}//overload so it can be use for map

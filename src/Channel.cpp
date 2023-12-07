@@ -93,3 +93,16 @@ void Channel::broadcastEveryone(const std::string &msg){
 		clientVector_[i].send(msg);
 	}
 }
+
+///@brief
+//send a message to every client other than a specific one in the channel 
+///@param
+// msg : message that will be send to every other user,
+///@param
+// sender : the Client excluded from the messages,
+void Channel::broadcastEveryoneElse(const std::string &msg, Client &sender){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (sender != clientVector_[i])
+			clientVector_[i].send(msg);
+	}
+}
