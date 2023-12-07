@@ -3,7 +3,6 @@ WEECHAT
 
 https://www.linode.com/docs/guides/using-weechat-for-irc/
 
-
 ctrl+v  ctrl+m pour end line
 
 
@@ -18,6 +17,16 @@ Connect to an IRC Server:
 dans weechat
 
 -     /server add <name> <hostname>/<port>  -notls
+
+
+QUICKSTART ULTIME
+
+- /server add irc host.docker.internal/6667
+
+
+- Setup password
+	/set irc.server.<server_name>.password <server_PASSWORD>
+
 
 -      /connect <name>
 

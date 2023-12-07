@@ -1,0 +1,72 @@
+# Ignore compiled object files
+*.o
+*.obj
+*.ko
+*.lo
+*.la
+*.lai
+*.so
+*.dll
+*.exe
+*.out
+*.app
+*.i
+*.swp
+
+# Ignore binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.ico
+*.tif
+*.tiff
+*.webp
+*.avi
+*.mpg
+*.mpeg
+*.wmv
+*.mov
+*.mp4
+*.mkv
+*.flv
+*.swf
+*.zip
+*.gz
+*.tar
+*.rar
+*.7z
+
+# Ignore generated files
+tags
+TAGS
+*.tags
+*.TAGS
+.clangd/
+
+# Ignore user-specific files
+.DS_Store
+Desktop.ini
+Thumbs.db
+ehthumbs.db
+
+# Ignore log files and databases
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+
+# Ignore compiled Python files
+*.pyc
+__pycache__/
+
+# Ignore compiled Java files
+*.class
+
+# Ignore compiled Ruby files
+*.rbf
+*.rbc
+
+# Ignore Node.js dependencies
+node_modules/
