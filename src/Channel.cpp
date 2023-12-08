@@ -94,7 +94,7 @@ void Channel::broadcastEveryone(const std::string &msg){
 }
 
 ///@brief
-//send a message to every client other than a specific one in the channel 
+//send a message to every client other than a specific one in the channel
 ///@param
 // msg : message that will be send to every other user,
 ///@param
@@ -146,7 +146,7 @@ void Channel::joinChannel(Client &client,const std::string &password){
 		std::cout << "bravo " << client.getNickName() << "you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
 	if (password == password_)
 		addClient(client);
-	throw std::runtime_error("wrong password bozo");//TODO changer pour le code d'erreur
+	throw std::runtime_error(ERR_PASSWDMISMATCH(client.getNickName()));
 }
 
 void Channel::addInviteList(Client &invite){

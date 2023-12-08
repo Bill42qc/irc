@@ -110,12 +110,12 @@ void Server::handleClientInput(int i){
 		client.catMSG(buffer);
 		if (buffer[bytesRead - 2] == 13 && hasNL){
 			client.rmCarReturnMSG(); //remove the charriot return (\r) so its easier to parse
-			std::cout << "Received data from client: " << client.getMSG() << std::endl;
+			std::cout <<GRE "Received data from client: " WHT<< client.getMSG() << std::endl;
 
 		if (buffer[0] == 'P' && buffer[1] == 'I' && buffer[2] == 'N' && buffer[3] == 'G')
 			handlePing(client); // Check for PING messages and send PONG responses
 
-			parsMsg(client.getMSG(), client);
+			// parsMsg(client.getMSG(), client);
 			try {
 				ACommand *cmd = commandFactory(client.getMSG(), client, channelVector_[0]);
 				cmd->exe();
@@ -328,10 +328,10 @@ void Server::handlePing(Client &client) {
         std::string pingContent = message.substr(5);
 
         // Send a PONG response back to the client
-        std::string pongResponse = "PONG " + pingContent + "\r\n";
+        std::string pongResponse = "PONG " + pingContent + CRLF;
         client.send(pongResponse);
 
-        std::cout << "Sent PONG to client: " << client.getUserName() << pongResponse << std::endl;
+        std::cout <<RED "Sent PONG to client: " WHT<< client.getUserName() << pongResponse << std::endl;
 
 }
 
@@ -350,13 +350,13 @@ void Server::handlePing(Client &client) {
 					}
 
 					else{
-						throw std::runtime_error("le code d'erreur si invite only pis tu es un rejet ");
+						throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
 					}
 				}
 				client.send("tu as un rejoin un channel congrats tu n'est completement attarder\n");//TODO send les bon shit a cette enfoiré
 			}
 			catch (std::exception &e){
-				//le code d'erreur sera le e.what();
+				std::cerr << e.what() << CRLF;
 			}
 		}
 		catch(std::exception){
