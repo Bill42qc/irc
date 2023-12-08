@@ -49,6 +49,7 @@ public:
 	void setTopic(bool flag){needPassword_ = flag;}
 	std::string &getTopic(){return topic_;}
 	bool getNeedPassword(){return needPassword_;}
+	bool getIsInviteOnly(){return isInviteOnly_;}
 	bool enterPassword(std::string password){return (password == password_ ? true : false);}
 	std::string &getName() {return name_;}
 	bool operator<(const Channel& other) const {return (name_ < other.name_);}//overload so it can be use for map

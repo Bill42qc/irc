@@ -115,7 +115,7 @@ void Server::handleClientInput(int i){
 		if (buffer[0] == 'P' && buffer[1] == 'I' && buffer[2] == 'N' && buffer[3] == 'G')
 			handlePing(client); // Check for PING messages and send PONG responses
 
-			parsMsg(client.getMSG());
+			parsMsg(client.getMSG(), client);
 			try {
 				ACommand *cmd = commandFactory(client.getMSG(), client, channelVector_[0]);
 				cmd->exe();
@@ -230,6 +230,7 @@ void Server::addChannel(Channel &channel){
 ///@param
 //name : the name of the channel that will be join
 void Server::joinChannel(std::string name, Client &client) {
+	std::cout << "creating new channel " << name << std::endl;
 	for (unsigned long i = 0;  i < channelVector_.size(); ++i)
 	{
 		if (channelVector_[i] == name){
@@ -264,18 +265,23 @@ void Server::broadcastMessage(const std::string& message, Client &client) {
 }
 
 
-void Server::parsMsg(std::string const &recept)
+void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
 	for (size_t i = 0; i < command_.size(); i++)
 		std::cout << command_[i] << std::endl;
-	//a dev pour le parsing
+	if(command_[0] == "JOIN")
+	{
+		std::cout << "JOIN BEEN RECONIZED N PARSE TO CALL JOIN function" << std::endl;
+		join(client);
+	}
+
+	
 }
 
 ACommand *Server::commandFactory(std::string str, Client &client, Channel &channel){
 	if (str == "JOIN"){ //pour tester
 		channel.addClient(client);
-		client.send("welcome into test channel\n");
 	}
 	if (str == "TOPIC")
 		return (new Topic(channel, client));
@@ -328,3 +334,34 @@ void Server::handlePing(Client &client) {
         std::cout << "Sent PONG to client: " << client.getUserName() << pongResponse << std::endl;
     
 }
+
+	void Server::join(Client &client)
+	{
+		//verification pour rejoindre channel
+		try{
+			Channel &channel = getChannel(command_[1]);
+			try{
+				if(channel.getIsInviteOnly() == true){
+					if(channel.isOnInviteList(client)){
+						if (command_.size() > 2)
+							channel.joinChannel(client, command_[2]);
+						else
+							channel.joinChannel(client);
+					}
+
+					else{
+						throw std::runtime_error("le code d'erreur si invite only pis tu es un rejet ");
+					}
+				}
+				client.send("tu as un rejoin un channel congrats tu n'est completement attarder\n");//TODO send les bon shit a cette enfoiré
+			}
+			catch (std::exception &e){
+				//le code d'erreur sera le e.what();
+			}
+		}
+		catch(std::exception){
+			joinChannel(command_[1], client);
+			client.send("tu as un rejoin un channel congrats tu n'est completement attarder\n");//TODO send les bon shit a cette enfoiré
+		}
+
+	}

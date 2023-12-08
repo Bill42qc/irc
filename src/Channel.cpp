@@ -111,7 +111,7 @@ Client &Channel::getClientByHostName(std::string name){
 		if (clientVector_[i].getHostName() == name)
 			return clientVector_[i];
 	}
-	throw std::runtime_error("Client not found");
+	throw std::runtime_error("Client not found");//TODO changer pour le code d'erreur
 
 }
 
@@ -120,7 +120,7 @@ Client &Channel::getClientByUserName(std::string name){
 		if (clientVector_[i].getUserName() == name)
 			return clientVector_[i];
 	}
-	throw std::runtime_error("Client not found");
+	throw std::runtime_error("Client not found");//TODO changer pour le code d'erreur
 }
 
 Client &Channel::getClientByNickName(std::string name){
@@ -128,21 +128,25 @@ Client &Channel::getClientByNickName(std::string name){
 		if (clientVector_[i].getNickName() == name)
 			return clientVector_[i];
 	}
-	throw std::runtime_error("Client not found");
+	throw std::runtime_error("Client not found");//TODO changer pour le code d'erreur
 }
 
 
 void Channel::joinChannel(Client &client){
 	if (!needPassword_)
+	{
+		std::cout << "bravo " << client.getNickName() << "you join join " << name_ << std::endl;
 		addClient(client);
-	throw std::runtime_error("need password");
+	}
+	throw std::runtime_error("need password");//TODO changer pour le code d'erreur
 
 }
 
 void Channel::joinChannel(Client &client,const std::string &password){
+		std::cout << "bravo " << client.getNickName() << "you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
 	if (password == password_)
-
-	addClient(client);
+		addClient(client);
+	throw std::runtime_error("wrong password bozo");//TODO changer pour le code d'erreur
 }
 
 void Channel::addInviteList(Client &invite){

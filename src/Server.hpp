@@ -55,13 +55,14 @@ public:
 	void removeClient(int i);
 	void addChannel(Channel &channel);
 	void handleNewConnection();
-	void parsMsg(std::string const &recept); //remplit le vecteur et pars le vecteur
+	void parsMsg(std::string const &recept, Client &client);//remplit le vecteur et pars le vecteur
 	void handleData(int clientSocket);
 	void handlePing(Client &client);
 	void run();
 	Client &getClientByHostName(std::string name);
 	Client &getClientByUserName(std::string name);
 	Client &getClientByNickName(std::string name);
+	void join(Client &client);
 
 
 	ACommand *commandFactory(std::string str, Client &client, Channel &channel);
