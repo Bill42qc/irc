@@ -43,7 +43,11 @@ QUICKSTART ULTIME
 
 
 AUTHENTIFICATE
+
+*set password before connection or use /reconnect
+
 /set irc.server.<server_name>.password <your_password>
+
 /nick <nickname>
 /user <user>
 

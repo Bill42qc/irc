@@ -76,3 +76,4 @@ node_modules/
 #custom ones for ft_irc
 .d
 bin/
+./ircserv
