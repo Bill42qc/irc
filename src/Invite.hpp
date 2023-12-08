@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "ACommand.hpp"
+
 class Invite: public ACommand
 {
 private:

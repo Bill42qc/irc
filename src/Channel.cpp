@@ -39,7 +39,7 @@ void Channel::addClient(Client &client){
 ///@brief
 //remove client to the list of connected client
 void Channel::removeClient(const Client &client){
-		for (unsigned long i = 0; i < clientVector_.size(); ++i){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
 		if (client == clientVector_[i]){
 			clientVector_.erase(clientVector_.begin() + i);
 			return ;
@@ -76,7 +76,6 @@ void Channel::removeOperator(Client &client){
 ///@return
 //true or false if the client is operator
 bool Channel::isOperator(Client &client){
-
 	for (unsigned long i = 0; i < operatorVector_.size(); ++i){
 		if (client == operatorVector_[i])
 			return true;
@@ -92,4 +91,72 @@ void Channel::broadcastEveryone(const std::string &msg){
 	for (unsigned long i = 0; i < clientVector_.size(); ++i){
 		clientVector_[i].send(msg);
 	}
+}
+
+///@brief
+//send a message to every client other than a specific one in the channel 
+///@param
+// msg : message that will be send to every other user,
+///@param
+// sender : the Client excluded from the messages,
+void Channel::broadcastEveryoneElse(const std::string &msg, Client &sender){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (sender != clientVector_[i])
+			clientVector_[i].send(msg);
+	}
+}
+
+Client &Channel::getClientByHostName(std::string name){
+		for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getHostName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");//TODO changer pour le code d'erreur
+
+}
+
+Client &Channel::getClientByUserName(std::string name){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getUserName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");//TODO changer pour le code d'erreur
+}
+
+Client &Channel::getClientByNickName(std::string name){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getNickName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");//TODO changer pour le code d'erreur
+}
+
+
+void Channel::joinChannel(Client &client){
+	if (!needPassword_)
+	{
+		std::cout << "bravo " << client.getNickName() << "you join join " << name_ << std::endl;
+		addClient(client);
+	}
+	throw std::runtime_error("need password");//TODO changer pour le code d'erreur
+
+}
+
+void Channel::joinChannel(Client &client,const std::string &password){
+		std::cout << "bravo " << client.getNickName() << "you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
+	if (password == password_)
+		addClient(client);
+	throw std::runtime_error("wrong password bozo");//TODO changer pour le code d'erreur
+}
+
+void Channel::addInviteList(Client &invite){
+		InviteList_.push_back(invite);
+}
+
+bool Channel::isOnInviteList(Client &client){
+	for (unsigned long i = 0; i < InviteList_.size(); ++i){
+		if (client == InviteList_[i])
+			return true;
+	}
+	return false;
 }

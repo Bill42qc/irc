@@ -1,17 +1,24 @@
 #pragma once
 
+#include <arpa/inet.h>
+#include <cstring>
+#include <cstdlib>
+#include <fcntl.h>
 #include <iostream>
 #include <unistd.h>
 #include <vector>
 #include <poll.h>
+#include <sys/socket.h>
+#include <stdexcept>
+#include <vector>
 #include "Client.hpp"
 #include "Channel.hpp"
-#include "ACommand.hpp"
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <cstring>
-#include <stdexcept>
-#include <fcntl.h>
+#include "Mode.hpp"
+#include "Invite.hpp"
+#include "Topic.hpp"
+#include "Kick.hpp"
+#include "utility.hpp"
+
 
 class Server
 {
@@ -48,10 +55,17 @@ public:
 	void removeClient(int i);
 	void addChannel(Channel &channel);
 	void handleNewConnection();
-	void parsMsg(std::string const &recept); //remplit le vecteur et pars le vecteur
+	void parsMsg(std::string const &recept, Client &client);//remplit le vecteur et pars le vecteur
 	void handleData(int clientSocket);
+	void handlePing(Client &client);
 	void run();
+	Client &getClientByHostName(std::string name);
+	Client &getClientByUserName(std::string name);
+	Client &getClientByNickName(std::string name);
+	void join(Client &client);
 
+
+	ACommand *commandFactory(std::string str, Client &client, Channel &channel);
 
 	Client &getClient(int i){return clientVector_[i];}
 

@@ -12,7 +12,7 @@ protected:
 public:
 	// Constructors / Destructor
 	ACommand(Channel &channel, Client &sender): channel_(channel), sender_(sender){}
-	~ACommand();
+	virtual ~ACommand();
 
 	// Operator Overload
 

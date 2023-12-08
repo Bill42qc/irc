@@ -70,3 +70,10 @@ __pycache__/
 
 # Ignore Node.js dependencies
 node_modules/
+
+
+
+#custom ones for ft_irc
+.d
+bin/
+./ircserv

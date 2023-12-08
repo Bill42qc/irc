@@ -1,13 +1,6 @@
 #include "Server.hpp"
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <vector>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include "utility.hpp"
 
-const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai\n";
+const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai";
 const int MAX_CONNECTIONS = 100;
 const int BUFFER_SIZE = 2048;
 static bool exiting = false;
@@ -84,8 +77,11 @@ void Server::receiveNewConnection(){
 	pollfd_.push_back(clientfd);
 
 	Client client(clientSocket);
-	// client.send(WELCOME_MSG);
-	// client.send("AUTHENTICATE\n");
+	client.send("authenticate placeholder \r\n");
+	// Send the RPL_WELCOME (001) message to the client
+    const char* welcomeMessage = ":127.0.0.1 001 MyNickname :Welcome to the IRC server, MyNickname!user@host\r\n";
+    send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
+	//client.send(WELCOME_MSG);
 	addClient(client);
 }
 
@@ -106,17 +102,25 @@ void Server::handleClientInput(int i){
 	bzero(buffer, sizeof(buffer));
 	ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
 
+
 	if (bytesRead > 0) {
-		buffer[bytesRead - 1] = 0;
+		bool hasNL = (buffer[bytesRead - 1] == '\n'? true : false);
+		if (hasNL)
+			buffer[bytesRead - 1] = 0;
 		client.catMSG(buffer);
-		if (buffer[bytesRead - 2] == 13){
-			buffer[bytesRead - 2] = 0;
+		if (buffer[bytesRead - 2] == 13 && hasNL){
+			client.rmCarReturnMSG(); //remove the charriot return (\r) so its easier to parse
 			std::cout << "Received data from client: " << client.getMSG() << std::endl;
 
-			 // Broadcast the message to all clients except the sender
-            broadcastMessage(client.getMSG(), client);
+		if (buffer[0] == 'P' && buffer[1] == 'I' && buffer[2] == 'N' && buffer[3] == 'G')
+			handlePing(client); // Check for PING messages and send PONG responses
 
-			// parsMsg(client.getMSG());
+			parsMsg(client.getMSG(), client);
+			try {
+				ACommand *cmd = commandFactory(client.getMSG(), client, channelVector_[0]);
+				cmd->exe();
+				delete (cmd);
+			} catch (std::exception &e){}//doing nothing is fine here we just stop doing useless stuff
 			client.resetMSG();
 		}
 	}
@@ -133,9 +137,9 @@ void Server::handleClientInput(int i){
 }
 
 ///@brief
-/*Main loop of the server
-Poll an array of fd and wait for event to happen.
-When event happen handle the data send or create new client*/
+//Main loop of the server
+//Poll an array of fd and wait for event to happen.
+//When event happen handle the data send or create new client
 void Server::run(){
 	struct pollfd serverfd;
 
@@ -144,29 +148,29 @@ void Server::run(){
 	serverfd.events = POLLIN;
 	pollfd_.push_back(serverfd);
 
-	while(exiting == false){
-		int	result =  poll(pollfd_.data(), pollfd_.size(), 50);
-		if (result == -1 && errno != EINTR) //errno check so it doesnt enter when ctrl - c
-			throw PollException();
-		else if (result > 0) {
-			for (size_t i = 0; i < pollfd_.size(); ++i) {
-				try {
-					if (pollfd_[i].revents & POLLIN) {
-						if (pollfd_[i].fd == socket_) {
-							receiveNewConnection();
-						} else {
-							handleClientInput(i - 1);
-						}
-					}
-				}
-				catch (std::exception &e){
-					std::cout << e.what() << std::endl;
-					removeClient(i - 1);
-				}
-			}
-		}
-
-	}
+	while (exiting == false) {
+        int result = poll(pollfd_.data(), pollfd_.size(), 50);
+        if (result == -1 && errno != EINTR)
+            throw PollException();
+        else if (result > 0) {
+            for (size_t i = 0; i < pollfd_.size(); ++i) {
+                try {
+                    if (pollfd_[i].revents & POLLIN) {
+    					if (pollfd_[i].fd == socket_) {
+      						receiveNewConnection();
+							}
+						else {
+            				handleClientInput(i - 1);
+        }
+    }
+}
+                catch (std::exception& e) {
+                std::cout << e.what() << std::endl;
+                removeClient(i - 1);
+                }
+            }
+        }
+    }
 }
 
 ///@brief
@@ -226,6 +230,7 @@ void Server::addChannel(Channel &channel){
 ///@param
 //name : the name of the channel that will be join
 void Server::joinChannel(std::string name, Client &client) {
+	std::cout << "creating new channel " << name << std::endl;
 	for (unsigned long i = 0;  i < channelVector_.size(); ++i)
 	{
 		if (channelVector_[i] == name){
@@ -260,10 +265,103 @@ void Server::broadcastMessage(const std::string& message, Client &client) {
 }
 
 
-void Server::parsMsg(std::string const &recept)
+void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
 	for (size_t i = 0; i < command_.size(); i++)
 		std::cout << command_[i] << std::endl;
-	//a dev pour le parsing
+	if(command_[0] == "JOIN")
+	{
+		std::cout << "JOIN BEEN RECONIZED N PARSE TO CALL JOIN function" << std::endl;
+		join(client);
+	}
+
+
 }
+
+ACommand *Server::commandFactory(std::string str, Client &client, Channel &channel){
+	if (str == "JOIN"){ //pour tester
+		channel.addClient(client);
+	}
+	if (str == "TOPIC")
+		return (new Topic(channel, client));
+	if (str == "KICK")
+		return (new Kick(channel, client));
+	if (str == "INVITE")
+		return (new Invite(channel, client));
+	if (str == "MODE")
+		return (new Mode(channel, client));
+
+	std::cout << "str is :" << str << std::endl;
+	throw std::runtime_error("banana"); //do other stuff but for the time being this is fine
+}
+
+Client &Server::getClientByHostName(std::string name){
+		for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getHostName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");
+
+}
+
+Client &Server::getClientByUserName(std::string name){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getUserName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");
+}
+
+Client &Server::getClientByNickName(std::string name){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getNickName() == name)
+			return clientVector_[i];
+	}
+	throw std::runtime_error("Client not found");
+}
+
+void Server::handlePing(Client &client) {
+    std::string message = client.getMSG();
+
+        // Extract the PING message content
+        std::string pingContent = message.substr(5);
+
+        // Send a PONG response back to the client
+        std::string pongResponse = "PONG " + pingContent + "\r\n";
+        client.send(pongResponse);
+
+        std::cout << "Sent PONG to client: " << client.getUserName() << pongResponse << std::endl;
+
+}
+
+	void Server::join(Client &client)
+	{
+		//verification pour rejoindre channel
+		try{
+			Channel &channel = getChannel(command_[1]);
+			try{
+				if(channel.getIsInviteOnly() == true){
+					if(channel.isOnInviteList(client)){
+						if (command_.size() > 2)
+							channel.joinChannel(client, command_[2]);
+						else
+							channel.joinChannel(client);
+					}
+
+					else{
+						throw std::runtime_error("le code d'erreur si invite only pis tu es un rejet ");
+					}
+				}
+				client.send("tu as un rejoin un channel congrats tu n'est completement attarder\n");//TODO send les bon shit a cette enfoiré
+			}
+			catch (std::exception &e){
+				//le code d'erreur sera le e.what();
+			}
+		}
+		catch(std::exception){
+			joinChannel(command_[1], client);
+			client.send("tu as un rejoin un channel congrats tu n'est completement attarder\n");//TODO send les bon shit a cette enfoiré
+		}
+
+	}
