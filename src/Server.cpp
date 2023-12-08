@@ -115,7 +115,7 @@ void Server::handleClientInput(int i){
 		if (buffer[0] == 'P' && buffer[1] == 'I' && buffer[2] == 'N' && buffer[3] == 'G')
 			handlePing(client); // Check for PING messages and send PONG responses
 
-			// parsMsg(client.getMSG(), client);
+			parsMsg(client.getMSG(), client);
 			try {
 				ACommand *cmd = commandFactory(client.getMSG(), client, channelVector_[0]);
 				cmd->exe();
@@ -242,6 +242,7 @@ void Server::joinChannel(std::string name, Client &client) {
 	Channel newChannel(name);
 	newChannel.addClient(client);
 	addChannel(newChannel);
+	newChannel.addOperator(client);
 }
 
 Channel &Server::getChannel(std::string &name){
@@ -268,8 +269,10 @@ void Server::broadcastMessage(const std::string& message, Client &client) {
 void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
-	for (size_t i = 0; i < command_.size(); i++)
-		std::cout << command_[i] << std::endl;
+	// for (size_t i = 0; i < command_.size(); i++) {
+	// 	std::cout << command_[i] << std::endl;
+	// }
+
 	if(command_[0] == "JOIN")
 	{
 		std::cout << "JOIN BEEN RECONIZED N PARSE TO CALL JOIN function" << std::endl;
@@ -353,7 +356,7 @@ void Server::handlePing(Client &client) {
 						throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
 					}
 				}
-				client.send("tu as un rejoin un channel congrats tu n'est completement attarder\n");//TODO send les bon shit a cette enfoiré
+				client.send(RPL_TOPIC(client.getNickName(), channel.getName(), channel.getTopic()));//TODO send les bon shit a cette enfoiré
 			}
 			catch (std::exception &e){
 				std::cerr << e.what() << CRLF;
@@ -361,7 +364,14 @@ void Server::handlePing(Client &client) {
 		}
 		catch(std::exception){
 			joinChannel(command_[1], client);
-			client.send("tu as un rejoin un channel congrats tu n'est completement attarder\n");//TODO send les bon shit a cette enfoiré
+			client.setNickName("user");
+			// std::string pouet = ":irc 353 user " + getChannel(command_[1]).getName() + " :Welcome to Quebec" + CRLF;
+			// client.send(RPL_JOIN(getChannel(command_[1]).getName()));
+			// Channel &channel = getChannel(command_[1]);
+			// client.send(pouet);//TODO send les bon shit a cette enfoir
+			// client.send(irc 332 yourNick #channel :Welcome to #channel! This is the channel topic.)
+			// client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
+			client.send(RPL_NAMREPLY(client.getNickName(), "=", getChannel(command_[1]).getName(), "@", client.getNickName()));//TODO send les bon shit a cette enfoiré
 		}
 
 	}

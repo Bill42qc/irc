@@ -121,7 +121,7 @@
 	* RPL_TOPIC (332)
 	* Sent to a client when joining the <channel> to inform them of the current topic of the channel.
 */
-#define RPL_TOPIC(client, channel, topic) (client + channel + " :" + topic + CRLF)
+#define RPL_TOPIC(client, channel, topic) ("332 " + client + channel + " :" + topic + CRLF)
 /**
 	* RPL_TOPICWHOTIME (333)
 	* Sent to a client to let them know who set the topic (<nick>) and
@@ -139,14 +139,14 @@
 	* membership prefix that client has in the channel, if they have one.
 	* The last parameter of this numeric is a list of [prefix]<nick> pairs, delimited by a SPACE character (' ', 0x20).
 */
-#define RPL_NAMREPLY(client, symbol, channel, prefix, nick) (client + symbol + channel + " :[" + prefix + "]" + nick + "{ [" + prefix + "]" + nick + "}" + CRLF)
+#define RPL_NAMREPLY(client, symbol, channel, prefix, nick) (":irc 353 " + client + " "  + symbol + " " + channel + " :[" + prefix + "]" + nick + "{ [" + prefix + "]" + nick + "}" + CRLF)
 /**
 	* RPL_ENDOFNAMES (366)
 	* Sent as a reply to the NAMES command, this numeric specifies the end of a list of channel member names.
 */
 #define RPL_ENDOFNAMES(client, channel) (client + channel + " :End of /NAMES list" << CRLF)
 
-
+#define RPL_JOIN(channel) ("JOIN :" + channel + CRLF)
 
 
 
