@@ -46,7 +46,7 @@ public:
 	void setInviteOnly(bool flag){isInviteOnly_ = flag;}
 	void setPassword(std::string password){password_ = password;}
 	void setTopic(std::string topic){topic_ = topic;}
-	void setTopic(bool flag){needPassword_ = flag;}
+	void setNeedPassword_(bool flag){needPassword_ = flag;}
 	std::string &getTopic(){return topic_;}
 	bool getNeedPassword(){return needPassword_;}
 	bool getIsInviteOnly(){return isInviteOnly_;}
