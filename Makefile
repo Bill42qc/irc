@@ -74,7 +74,6 @@ weechat: $(NAME)
 	docker pull weechat/weechat
 
 wee: $(NAME)
-	docker pull weechat/weechat
 	docker run -it --rm --name weechat-container weechat/weechat /bin/sh -c \
 		"weechat --run-command '/server add irc host.docker.internal/6667 -notls'"
 

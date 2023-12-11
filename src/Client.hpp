@@ -34,9 +34,9 @@ public:
 	const std::string &getUserName() const{return userName_;}
 	int getClientSocket() const{return clientSocket_;}
 	bool getHasPassword(){return hasPassword_;}
-	void setHostName(const std::string &name){hostName_ = name;}
-	void setNickName(const std::string &name){nickName_ = name;}
-	void setUserName(const std::string &name){userName_ = name;}
+	void setNickName(std::string &name){nickName_ = name;}
+	void setUserName(const std::string &name) { userName_ = name; }
+	void setHostName(const std::string &name) { hostName_ = name; }
 	void validatePassword(){hasPassword_ = true;}
 	void catMSG(std::string msg){msg_ = msg_ + msg;}
 	void rmCarReturnMSG(){msg_ = msg_.substr(0, msg_.size() - 1);}

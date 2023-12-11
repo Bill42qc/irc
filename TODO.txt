@@ -1,6 +1,7 @@
 Liste des choses a faire
 
 [DONE] faire en sorte que le server et le client communique en PING - PONG
+[DONE] parser la commande que le serveur recoit / AUTHENTIFICATION
 
 
 
