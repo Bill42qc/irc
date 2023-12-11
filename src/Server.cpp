@@ -79,8 +79,8 @@ void Server::receiveNewConnection(){
 	Client client(clientSocket);
 	client.send("authenticate placeholder \r\n");
 	// Send the RPL_WELCOME (001) message to the client
-    std::string welcomeMessage = ":127.0.0.1 001" + client.getNickName() + ":Welcome to the IRC server, MyNickname!user@host\r\n";
-    send(clientSocket, welcomeMessage.c_str(), welcomeMessage.size(), 0);
+    const char* welcomeMessage = ":127.0.0.1 001 MyNickname :Welcome to the IRC server, MyNickname!user@host\r\n";
+    send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
 	//client.send(WELCOME_MSG);
 	addClient(client);
 }
@@ -102,7 +102,7 @@ void Server::handleClientInput(int i){
 	bzero(buffer, sizeof(buffer));
 	ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
 
-	
+
 	if (bytesRead > 0) {
 		bool hasNL = (buffer[bytesRead - 1] == '\n'? true : false);
 		if (hasNL)
@@ -110,8 +110,8 @@ void Server::handleClientInput(int i){
 		client.catMSG(buffer);
 		if (buffer[bytesRead - 2] == 13 && hasNL){
 			client.rmCarReturnMSG(); //remove the charriot return (\r) so its easier to parse
-			std::cout << "Received data from client: " << client.getMSG() << std::endl;
-		
+			std::cout <<GRE "Received data from client: " WHT<< client.getMSG() << std::endl;
+
 		if (buffer[0] == 'P' && buffer[1] == 'I' && buffer[2] == 'N' && buffer[3] == 'G')
 			handlePing(client); // Check for PING messages and send PONG responses
 
@@ -242,6 +242,7 @@ void Server::joinChannel(std::string name, Client &client) {
 	Channel newChannel(name);
 	newChannel.addClient(client);
 	addChannel(newChannel);
+	newChannel.addOperator(client);
 }
 
 Channel &Server::getChannel(std::string &name){
@@ -268,15 +269,20 @@ void Server::broadcastMessage(const std::string& message, Client &client) {
 void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
-	for (size_t i = 0; i < command_.size(); i++)
-		std::cout << command_[i] << std::endl;
+	// for (size_t i = 0; i < command_.size(); i++) {
+	// 	std::cout << command_[i] << std::endl;
+	// }
+
 	if(command_[0] == "JOIN")
 	{
 		std::cout << "JOIN BEEN RECONIZED N PARSE TO CALL JOIN function" << std::endl;
 		join(client);
 	}
-
-	
+	if (command_[0] == "NICK") {
+		std::cout << "NICK ALL GARBAGE" << std::endl;
+		client.send(RPL_NICK(command_[1]));
+		client.setNickName(command_[1]);
+	}
 }
 
 ACommand *Server::commandFactory(std::string str, Client &client, Channel &channel){
@@ -328,11 +334,11 @@ void Server::handlePing(Client &client) {
         std::string pingContent = message.substr(5);
 
         // Send a PONG response back to the client
-        std::string pongResponse = "PONG " + pingContent + "\r\n";
+        std::string pongResponse = "PONG " + pingContent + CRLF;
         client.send(pongResponse);
 
-        std::cout << "Sent PONG to client: " << client.getUserName() << pongResponse << std::endl;
-    
+        std::cout <<RED "Sent PONG to client: " WHT<< client.getUserName() << pongResponse << std::endl;
+
 }
 
 	void Server::join(Client &client)
@@ -362,6 +368,7 @@ void Server::handlePing(Client &client) {
 		}
 		catch(std::exception){
 			joinChannel(command_[1], client);
+			// client.setNickName("MyNickname");
 			client.setUserName("user");
 			client.setHostName("host");
 
