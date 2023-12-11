@@ -278,8 +278,11 @@ void Server::parsMsg(std::string const &recept, Client &client)
 		std::cout << "JOIN BEEN RECONIZED N PARSE TO CALL JOIN function" << std::endl;
 		join(client);
 	}
-
-
+	if (command_[0] == "NICK") {
+		std::cout << "NICK ALL GARBAGE" << std::endl;
+		client.send(RPL_NICK(command_[1]));
+		client.setNickName(command_[1]);
+	}
 }
 
 ACommand *Server::commandFactory(std::string str, Client &client, Channel &channel){
@@ -356,7 +359,8 @@ void Server::handlePing(Client &client) {
 						throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
 					}
 				}
-				client.send(RPL_TOPIC(client.getNickName(), channel.getName(), channel.getTopic()));//TODO send les bon shit a cette enfoiré
+				client.send(RPL_JOIN(client.getNickName(), client.getUserName(), client.getHostName(), command_[1]));
+				client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
 			}
 			catch (std::exception &e){
 				std::cerr << e.what() << CRLF;
@@ -364,14 +368,15 @@ void Server::handlePing(Client &client) {
 		}
 		catch(std::exception){
 			joinChannel(command_[1], client);
-			client.setNickName("user");
-			// std::string pouet = ":irc 353 user " + getChannel(command_[1]).getName() + " :Welcome to Quebec" + CRLF;
-			// client.send(RPL_JOIN(getChannel(command_[1]).getName()));
-			// Channel &channel = getChannel(command_[1]);
-			// client.send(pouet);//TODO send les bon shit a cette enfoir
-			// client.send(irc 332 yourNick #channel :Welcome to #channel! This is the channel topic.)
-			// client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
-			client.send(RPL_NAMREPLY(client.getNickName(), "=", getChannel(command_[1]).getName(), "@", client.getNickName()));//TODO send les bon shit a cette enfoiré
+			// client.setNickName("MyNickname");
+			client.setUserName("user");
+			client.setHostName("host");
+
+			std::cout << "nick: " << client.getNickName() << std::endl << "User: " << client.getUserName() << std::endl << "Host: " << client.getHostName() << std::endl << "channel: " << getChannel(command_[1]).getName() << std::endl;
+
+			client.send(RPL_JOIN(client.getNickName(), client.getUserName(), client.getHostName(), command_[1]));
+			if(getChannel(command_[1]).getTopic() != "")
+				client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
 		}
 
 	}

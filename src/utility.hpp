@@ -22,7 +22,7 @@
 	* ERR_NONICKNAMEGIVEN (431)
 	* Returned when a nickname parameter is expected for a command but isn’t given.
 */
-#define ERR_NONICKNAMEGIVEN(client) (client  + " :No nickname given" + CRLF)
+#define ERR_NONICKNAMEGIVEN(client) ("431 " + client  + " :No nickname given" + CRLF)
 /**
 	* ERR_ERRONEUSNICKNAME (432)
 	* Returned when a NICK command cannot be successfully completed as the desired
@@ -121,7 +121,7 @@
 	* RPL_TOPIC (332)
 	* Sent to a client when joining the <channel> to inform them of the current topic of the channel.
 */
-#define RPL_TOPIC(client, channel, topic) ("332 " + client + channel + " :" + topic + CRLF)
+#define RPL_TOPIC(client, channel, topic) ("332 " + client + " " + channel + " :" + topic + CRLF)
 /**
 	* RPL_TOPICWHOTIME (333)
 	* Sent to a client to let them know who set the topic (<nick>) and
@@ -146,9 +146,15 @@
 */
 #define RPL_ENDOFNAMES(client, channel) (client + channel + " :End of /NAMES list" << CRLF)
 
-#define RPL_JOIN(channel) ("JOIN :" + channel + CRLF)
+/**
+	* Join a chanel
+*/
+#define RPL_JOIN(nick, user, hostname, channel) (":" + nick + "!" + user + "@" + hostname + " JOIN " + channel + CRLF)
 
-
+/**
+	* set nick name.
+*/
+#define RPL_NICK(name) ("001 " + name + " client.nickname = " + name + CRLF)
 
 std::vector<std::string> splitString(const std::string &input, char delimiter);
 
