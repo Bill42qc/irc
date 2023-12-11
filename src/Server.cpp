@@ -79,8 +79,8 @@ void Server::receiveNewConnection(){
 	Client client(clientSocket);
 	client.send("authenticate placeholder \r\n");
 	// Send the RPL_WELCOME (001) message to the client
-    const char* welcomeMessage = ":127.0.0.1 001 MyNickname :Welcome to the IRC server, MyNickname!user@host\r\n";
-    send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
+    std::string welcomeMessage = ":127.0.0.1 001" + client.getNickName() + ":Welcome to the IRC server, MyNickname!user@host\r\n";
+    send(clientSocket, welcomeMessage.c_str(), welcomeMessage.size(), 0);
 	//client.send(WELCOME_MSG);
 	addClient(client);
 }
@@ -350,18 +350,26 @@ void Server::handlePing(Client &client) {
 					}
 
 					else{
-						throw std::runtime_error("le code d'erreur si invite only pis tu es un rejet ");
+						throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
 					}
 				}
-				client.send("tu as un rejoin un channel congrats tu n'est completement attarder\n");//TODO send les bon shit a cette enfoiré
+				client.send(RPL_JOIN(client.getNickName(), client.getUserName(), client.getHostName(), command_[1]));
+				client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
 			}
 			catch (std::exception &e){
-				//le code d'erreur sera le e.what();
+				std::cerr << e.what() << CRLF;
 			}
 		}
 		catch(std::exception){
 			joinChannel(command_[1], client);
-			client.send("tu as un rejoin un channel congrats tu n'est completement attarder\n");//TODO send les bon shit a cette enfoiré
+			client.setUserName("user");
+			client.setHostName("host");
+
+			std::cout << "nick: " << client.getNickName() << std::endl << "User: " << client.getUserName() << std::endl << "Host: " << client.getHostName() << std::endl << "channel: " << getChannel(command_[1]).getName() << std::endl;
+
+			client.send(RPL_JOIN(client.getNickName(), client.getUserName(), client.getHostName(), command_[1]));
+			if(getChannel(command_[1]).getTopic() != "")
+				client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
 		}
 
 	}
