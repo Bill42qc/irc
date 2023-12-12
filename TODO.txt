@@ -1,11 +1,1 @@
-Liste des choses a faire
-
-[DONE] faire en sorte que le server et le client communique en PING - PONG
-[DONE] parser la commande que le serveur recoit / AUTHENTIFICATION
-
-
-
-
-[Romain] faire la liste des messages retour du serveur au client
-[Pascal] recherche sur les commandes ( quoi renvoyer)
-
+https://www.notion.so/IRC-402a80621bf5414a882f205526bfa96e
