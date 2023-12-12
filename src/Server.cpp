@@ -77,11 +77,14 @@ void Server::receiveNewConnection(){
 	pollfd_.push_back(clientfd);
 
 	Client client(clientSocket);
+	std::cout << client.getNickName() << "Je suis la "<< std::endl;
 	client.send("authenticate placeholder \r\n");
-	std::string massage = ":127.0.0.1 001" + client.getNickName() + ":Welcome to the IRC server, MyNickname!user@host\r\n";
-    const char* welcomeMessage = massage.c_str();
-    send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
-	//client.send(WELCOME_MSG);
+	// std::string massage = "001 " + client.getNickName() + " :Welcome to the IRC server, user!user@host\r\n";
+    // const char* welcomeMessage = massage.c_str();
+    // send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
+	std::string nick_temp = "user";
+	client.setNickName(nick_temp);
+	client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	addClient(client);
 }
 
@@ -270,13 +273,17 @@ void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
 
+	// if (command_[0] == "CAP")
+	// 	client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	if(command_[0] == "JOIN")
 	{
 		std::cout << "JOIN BEEN RECONIZED N PARSE TO CALL JOIN function" << std::endl;
 		join(client);
 	}
 	if (command_[0] == "NICK") {
-		client.send(RPL_NICK(command_[1]));
+		std::cout << client.getNickName() << ": je suis la " << std::endl;
+		std::cout << command_[1] << " je aussi ici " << std::endl;
+		client.send(RPL_NICK(client.getNickName(), command_[1]));
 		client.setNickName(command_[1]);
 	}
 	if (command_[0] == "PASS") {
@@ -360,7 +367,7 @@ void Server::handlePing(Client &client) {
 						throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
 					}
 				}
-				client.send(RPL_JOIN(client.getNickName(), client.getUserName(), client.getHostName(), command_[1]));
+				client.send(RPL_JOIN(client.getNickName(), command_[1]));
 				client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
 			}
 			catch (std::exception &e){
@@ -375,7 +382,7 @@ void Server::handlePing(Client &client) {
 
 			std::cout << "nick: " << client.getNickName() << std::endl << "User: " << client.getUserName() << std::endl << "Host: " << client.getHostName() << std::endl << "channel: " << getChannel(command_[1]).getName() << std::endl;
 
-			client.send(RPL_JOIN(client.getNickName(), client.getUserName(), client.getHostName(), command_[1]));
+			client.send(RPL_JOIN(client.getNickName(), command_[1]));
 			if(getChannel(command_[1]).getTopic() != "")
 				client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
 		}
