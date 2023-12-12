@@ -84,6 +84,8 @@ void Server::receiveNewConnection(){
     // send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
 	std::string nick_temp = "user";
 	client.setNickName(nick_temp);
+	client.setUserName("user");
+	client.setHostName("host");
 	client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	addClient(client);
 }
