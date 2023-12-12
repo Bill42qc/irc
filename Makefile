@@ -65,7 +65,7 @@ leaks: $(NAME)
 	leaks -atExit -- ./$(NAME)
 
 run: $(NAME)
-	./$(NAME) 6667 PASSWORD
+	./$(NAME) 6667 PASSWORD123
 
 nc:
 	nc 127.0.0.1 6667
@@ -75,7 +75,7 @@ weechat: $(NAME)
 
 wee: $(NAME)
 	docker run -it --rm --name weechat-container weechat/weechat /bin/sh -c \
-		"weechat --run-command '/server add irc host.docker.internal/6667 -notls'"
+		"weechat --run-command '/server add irc host.docker.internal/6667 -notls -password=PASSWORD123'"
 
 	
 

@@ -78,8 +78,8 @@ void Server::receiveNewConnection(){
 
 	Client client(clientSocket);
 	client.send("authenticate placeholder \r\n");
-	// Send the RPL_WELCOME (001) message to the client
-    const char* welcomeMessage = ":127.0.0.1 001 MyNickname :Welcome to the IRC server, MyNickname!user@host\r\n";
+	std::string massage = ":127.0.0.1 001" + client.getNickName() + ":Welcome to the IRC server, MyNickname!user@host\r\n";
+    const char* welcomeMessage = massage.c_str();
     send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
 	//client.send(WELCOME_MSG);
 	addClient(client);
@@ -181,7 +181,7 @@ void Server::run(){
 //password : the password needed to connect to the server
 void Server::init(const std::string &port, const std::string &password){
 	port_ = std::stoi(port);
-	password_ = password;
+	serverPassword_ = password;
 	createSocket();
 	bindSocket();
 	listenSocket();
@@ -269,9 +269,6 @@ void Server::broadcastMessage(const std::string& message, Client &client) {
 void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
-	// for (size_t i = 0; i < command_.size(); i++) {
-	// 	std::cout << command_[i] << std::endl;
-	// }
 
 	if(command_[0] == "JOIN")
 	{
@@ -279,9 +276,13 @@ void Server::parsMsg(std::string const &recept, Client &client)
 		join(client);
 	}
 	if (command_[0] == "NICK") {
-		std::cout << "NICK ALL GARBAGE" << std::endl;
 		client.send(RPL_NICK(command_[1]));
 		client.setNickName(command_[1]);
+	}
+	if (command_[0] == "PASS") {
+		client.setHasPassword();
+		client.setPassword((command_[1]));
+		password_check(serverPassword_, client.getPassword());
 	}
 }
 
