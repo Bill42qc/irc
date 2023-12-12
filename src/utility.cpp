@@ -23,3 +23,13 @@ std::vector<std::string> splitString(const std::string &input, char limiter)
 
     return result;
 }
+
+void password_check (std::string serverPassword, std::string clientPassword)
+{
+    std::cout << "client password = " + clientPassword << std::endl;
+    std::cout << "server password = " + serverPassword << std::endl;
+    if(serverPassword == clientPassword)
+        std::cout <<GRE "Password " + clientPassword +  " Acepted, Now Connecting ..." WHT<< std::endl;
+    else
+        throw std::runtime_error( RED "PASSWORD" + clientPassword +  " Is WRONG, try again" WHT);//TODO changer pour le code d'erreur
+}

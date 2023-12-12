@@ -156,6 +156,12 @@
 */
 #define RPL_NICK(name) ("001 " + name + " client.nickname = " + name + CRLF)
 
+
+
+
+////Function
+
 std::vector<std::string> splitString(const std::string &input, char delimiter);
+void password_check (std::string serverPassword, std::string clientPassword);
 
 #endif

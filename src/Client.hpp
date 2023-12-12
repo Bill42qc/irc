@@ -11,6 +11,7 @@ private:
 	std::string msg_;
 	std::string nickName_;
 	std::string userName_;
+	std::string clientPassword_;
 	int clientSocket_;
 	bool hasPassword_;
 public:
@@ -29,6 +30,7 @@ public:
 
 	// getter setter
 	const std::string &getHostName() const{return hostName_;}
+	const std::string &getPassword() const{return clientPassword_;}
 	const std::string &getNickName() const{return nickName_;}
 	const std::string &getUserName() const{return userName_;}
 	int getClientSocket() const{return clientSocket_;}
@@ -36,7 +38,8 @@ public:
 	void setNickName(std::string &name){nickName_ = name;}
 	void setUserName(const std::string &name) { userName_ = name; }
 	void setHostName(const std::string &name) { hostName_ = name; }
-	void validatePassword(){hasPassword_ = true;}
+	void setPassword( std::string &name) { clientPassword_ = name; }
+	void setHasPassword(){hasPassword_ = true;}
 	void catMSG(std::string msg){msg_ = msg_ + msg;}
 	void rmCarReturnMSG(){msg_ = msg_.substr(0, msg_.size() - 1);}
 	void resetMSG(){msg_ = "";}

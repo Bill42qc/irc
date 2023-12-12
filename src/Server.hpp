@@ -29,7 +29,7 @@ private:
 	std::vector<Channel> channelVector_;
 	//vecteur de la commande recu
 	std::vector<std::string> command_;
-	std::string	password_;
+	std::string	serverPassword_;
 	int socket_;
 	uint32_t port_;
 	//private function
