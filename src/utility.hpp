@@ -18,6 +18,8 @@
 
 #define CRLF "\r\n"
 
+// ERROR //
+
 /**
 	* ERR_NONICKNAMEGIVEN (431)
 	* Returned when a nickname parameter is expected for a command but isn’t given.
@@ -112,6 +114,14 @@
 */
 #define ERR_BADCHANMASK(channel) ("476 " + channel + " :Bad Channel Mask" + CRLF)
 /**
+ * ERR_NOTONCHANNEL (442)
+ * Returned when a client tries to perform a channel-affecting command on a channel which the client isn’t a part of.
+*/
+#define ERR_NOTONCHANNEL(client, nick, channel) ("442 " + client + " " + channel + " :You're not on that channel")
+
+// RPL CORRECT //
+
+/**
 	* RPL_TOPIC (332)
 	* Sent to a client when joining the <channel> to inform them of the current topic of the channel.
 */
@@ -139,20 +149,19 @@
 	* Sent as a reply to the NAMES command, this numeric specifies the end of a list of channel member names.
 */
 #define RPL_ENDOFNAMES(client, channel) ("366 " + client + channel + " :End of /NAMES list" << CRLF)
-
 /**
 	* Join a chanel
 */
 #define RPL_JOIN(nick, channel) (":" + nick + " JOIN " + channel + CRLF)
-
 /**
 	* set nick name.
 */
 #define RPL_NICK(nick, newNick) (":" + nick + " NICK " + newNick + " :" + nick + " has changed their nickname to " + newNick + CRLF)
-
+/**
+	* set nick name.
+*/
 #define RPL_WELCOME(nick, user, host) ("001 " + nick + " :Welcome to the IRC server, " + nick + "!" + user + "@" + host + CRLF)
 
-// ":" + oldNickname + " NICK " + user->getNickname() + " :" + oldNickname + " has changed their nickname to " + user->getNickname() + "\r\n";
 ////Function
 
 std::vector<std::string> splitString(const std::string &input, char delimiter);
