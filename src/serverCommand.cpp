@@ -10,20 +10,34 @@ void Server::parsMsg(std::string const &recept, Client &client)
 		handlePing(client);
 	}
 	if(command_[0] == "JOIN"){
-		std::cout << "JOIN BEEN RECONIZED N PARSE TO CALL JOIN function" << std::endl;
 		join(client);
 	}
 	if (command_[0] == "NICK") {
-		std::cout << client.getNickName() << ": je suis la " << std::endl;
-		std::cout << command_[1] << " je aussi ici " << std::endl;
-		client.send(RPL_NICK(client.getNickName(), command_[1]));
-		client.setNickName(command_[1]);
+		nick(client);
 	}
 	if (command_[0] == "PASS") {
-		client.setHasPassword();
-		client.setPassword((command_[1]));
-		password_check(serverPassword_, client.getPassword());
+		pass(client);
 	}
+	if (command_[0] == "PRIVMSG") {
+		privmsg(client);
+	}
+}
+
+void Server::nick(Client &client){
+	std::cout << client.getNickName() << ": je suis la " << std::endl;
+	std::cout << command_[1] << " je aussi ici " << std::endl;
+	client.send(RPL_NICK(client.getNickName(), command_[1]));
+	client.setNickName(command_[1]);
+}
+
+void Server::pass(Client &client){
+	client.setHasPassword();
+	client.setPassword((command_[1]));
+	password_check(serverPassword_, client.getPassword());
+}
+
+void Server::privmsg(Client &client){
+	std::cout << "this shit still not done " << client.getNickName() <<std::endl;
 }
 
 void Server::join(Client &client)
@@ -84,8 +98,10 @@ void Server::joinChannel(std::string name, Client &client) {
 
 ACommand *Server::commandFactory(Client &client){
 
+	std::string command = command_[0];
+	if (!(command == "TOPIC" || command == "KICK" || command == "INVITE" || command == "MODE"))
+		throw std::runtime_error(""); //avoid next try catch if its not a channel command
 	try{
-		std::string command = command_[0];
 		Channel &channel = getChannel(command_[1]);
 
 		if (command == "TOPIC")
@@ -98,8 +114,7 @@ ACommand *Server::commandFactory(Client &client){
 			return (new Mode(channel, client, command_));
 	}
 	catch (std::exception &e){
-		if (client.getNickName() == "placeholder") //juste pour pas envoyer dans tout les cas il y as des verife a faire avant 
 			client.send("no such channel"); // envoyer la bonne erreur 
 	}
-	throw std::runtime_error(""); //do other stuff but for the time being this is fine
+	throw std::runtime_error(""); //will never go there but need it for compilation
 }
