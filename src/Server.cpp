@@ -143,7 +143,6 @@ void signalHandler(int sig){
 void Server::run(){
 	struct pollfd serverfd;
 
-	{}
 	serverfd.fd = socket_;
 	serverfd.events = POLLIN;
 	pollfd_.push_back(serverfd);
