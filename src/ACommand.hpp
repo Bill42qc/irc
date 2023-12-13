@@ -9,9 +9,10 @@ class ACommand
 protected:
 	Channel &channel_;
 	Client &sender_;
+	std::vector<std::string> args_;
 public:
 	// Constructors / Destructor
-	ACommand(Channel &channel, Client &sender): channel_(channel), sender_(sender){}
+	ACommand(Channel &channel, Client &sender, std::vector<std::string> v): channel_(channel), sender_(sender), args_(v){}
 	virtual ~ACommand();
 
 	// Operator Overload

@@ -59,16 +59,16 @@ public:
 	void handleData(int clientSocket);
 	void handlePing(Client &client);
 	void run();
+	void privmsg(Client &client);
+	void pass(Client &client);
+	void nick(Client &client);
+	void join(Client &client);
+	ACommand *commandFactory(Client &client);
+
+	Client &getClient(int i){return clientVector_[i];}
 	Client &getClientByHostName(std::string name);
 	Client &getClientByUserName(std::string name);
 	Client &getClientByNickName(std::string name);
-	void join(Client &client);
-
-
-	ACommand *commandFactory(std::string str, Client &client, Channel &channel);
-
-	Client &getClient(int i){return clientVector_[i];}
-
 	class SocketException : public std::exception {
 	public:
 		const char* what() const throw(){return "Error creating socket.";}

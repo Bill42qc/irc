@@ -1,8 +1,8 @@
 #include "Kick.hpp"
 
-Kick::Kick(Channel &channel, Client &sender): ACommand(channel, sender), kick_(sender)
+Kick::Kick(Channel &channel, Client &sender, std::vector<std::string> v): ACommand(channel, sender, v), kick_(sender)
 {
-	// kick_ = sender;
+
 }
 Kick::~Kick(){
 }

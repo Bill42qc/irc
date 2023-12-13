@@ -11,7 +11,7 @@ private:
 	Client &kick_;
 public:
 	// Constructors / Destructor
-	Kick(Channel &channel, Client &sender);
+	Kick(Channel &channel, Client &sender, std::vector<std::string> v);
 	~Kick();
 
 	// Functions

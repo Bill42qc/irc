@@ -9,7 +9,7 @@ private:
 
 public:
 	// Constructors / Destructor
-	Invite(Channel &channel, Client &sender): ACommand(channel, sender){};
+	Invite(Channel &channel, Client &sender, std::vector<std::string> v): ACommand(channel, sender, v){};
 
 	~Invite();
 	// Functions
