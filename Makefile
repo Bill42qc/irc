@@ -24,7 +24,9 @@ SRCS	=	main.cpp \
 			Mode.cpp \
 			Server.cpp \
 			Topic.cpp \
-			utility.cpp
+			utility.cpp \
+			serverCommand.cpp\
+			
 SRCS_DIR = src
 # Objects are all .o files
 OBJS_DIR	=	bin

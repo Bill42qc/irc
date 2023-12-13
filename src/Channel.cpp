@@ -77,8 +77,9 @@ void Channel::removeOperator(Client &client){
 //true or false if the client is operator
 bool Channel::isOperator(Client &client){
 	for (unsigned long i = 0; i < operatorVector_.size(); ++i){
-		if (client == operatorVector_[i])
+		if (client == operatorVector_[i]){
 			return true;
+		}
 	}
 	return false;
 }

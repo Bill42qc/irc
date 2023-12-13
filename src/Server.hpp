@@ -63,9 +63,7 @@ public:
 	Client &getClientByUserName(std::string name);
 	Client &getClientByNickName(std::string name);
 	void join(Client &client);
-
-
-	ACommand *commandFactory(std::string str, Client &client, Channel &channel);
+	ACommand *commandFactory(Client &client);
 
 	Client &getClient(int i){return clientVector_[i];}
 

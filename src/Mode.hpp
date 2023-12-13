@@ -9,7 +9,7 @@ private:
 
 public:
 	// Constructors / Destructor
-	Mode(Channel &channel, Client &sender): ACommand(channel, sender){};
+	Mode(Channel &channel, Client &sender, std::vector<std::string> v): ACommand(channel, sender, v){};
 	~Mode();
 	// Functions
 	void exe() const;

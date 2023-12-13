@@ -11,8 +11,6 @@ int main(int argc, char **argv)
 	}
 	try{
 		server.init(argv[1], argv[2]);
-		Channel channel("TEST");
-		server.addChannel(channel);
 		server.run();
 		server.shutdown();
 	}
