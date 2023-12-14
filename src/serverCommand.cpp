@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "utility.hpp"
 
 void Server::parsMsg(std::string const &recept, Client &client)
 {
@@ -114,7 +115,7 @@ ACommand *Server::commandFactory(Client &client){
 			return (new Mode(channel, client, command_));
 	}
 	catch (std::exception &e){
-			client.send("no such channel"); // envoyer la bonne erreur 
+			client.send("err not working"); // envoyer la bonne erreur 
 	}
-	throw std::runtime_error(""); //will never go there but need it for compilation
+	throw std::runtime_error(""); //EVERYTHING else we just ignore it
 }
