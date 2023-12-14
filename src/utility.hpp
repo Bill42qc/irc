@@ -190,7 +190,7 @@
 /**
  * create topic
 */
-#define RPL_NEWTOPIC(channel, topic) ("TOPIC " + channel + " :" + topic)
+#define RPL_NEWTOPIC(channel, topic) ("TOPIC " + channel + " :" + topic + CRLF)
 
 ////Function
 
