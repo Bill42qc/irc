@@ -18,6 +18,8 @@
 
 #define CRLF "\r\n"
 
+// ERROR //
+
 /**
 	* ERR_NONICKNAMEGIVEN (431)
 	* Returned when a nickname parameter is expected for a command but isn’t given.
@@ -112,6 +114,30 @@
 */
 #define ERR_BADCHANMASK(channel) ("476 " + channel + " :Bad Channel Mask" + CRLF)
 /**
+ * ERR_NOTONCHANNEL (442)
+ * Returned when a client tries to perform a channel-affecting command on a channel which the client isn’t a part of.
+*/
+#define ERR_NOTONCHANNEL(client, nick, channel) ("442 " + client + " " + channel + " :You're not on that channel" + CRLF)
+/**
+ * ERR_CHANOPRIVSNEEDED (482)
+ * Indicates that the command failed because the user is not an IRC operator.
+ * The text used in the last param of this message may vary.
+*/
+#define ERR_CHANOPRIVSNEEDED(client, channel) ("482 " + client + " " + channel + " :You're not channel operator" + CRLF)
+/**
+ * ERR_USERONCHANNEL (443)
+ * Returned when a client tries to invite <nick> to a channel they’re already joined to.
+*/
+#define ERR_USERONCHANNEL(client, nick, channel) ("443 " + client " " + nick  + " " + channel + " :is already on channel" + CRLF)
+/**
+ * ERR_USERNOTINCHANNEL (441)
+ * Returned when a client tries to perform a channel+nick affecting command,
+ * when the nick isn’t joined to the channel (for example, MODE #channel +o nick).
+*/
+#define ERR_USERNOTINCHANNEL(client, nick, channel) ("441 " + client + " " + nick + " " + channel + " :They aren't on that channel" + CRLF)
+// RPL CORRECT //
+
+/**
 	* RPL_TOPIC (332)
 	* Sent to a client when joining the <channel> to inform them of the current topic of the channel.
 */
@@ -139,20 +165,33 @@
 	* Sent as a reply to the NAMES command, this numeric specifies the end of a list of channel member names.
 */
 #define RPL_ENDOFNAMES(client, channel) ("366 " + client + channel + " :End of /NAMES list" << CRLF)
-
+/**
+	* Welcome (001).
+*/
+#define RPL_WELCOME(nick, user, host) ("001 " + nick + " :Welcome to the IRC server, " + nick + "!" + user + "@" + host + CRLF)
+/**
+ * RPL_INVITING (341)
+ * Sent as a reply to the INVITE command to indicate that the attempt
+ * was successful and the client with the nickname <nick> has been invited to <channel>.
+*/
+#define RPL_INVITING(client, nick, channel) ("341 " + client + " " + nick  + " " + channel + CRLF)
 /**
 	* Join a chanel
 */
 #define RPL_JOIN(nick, channel) (":" + nick + " JOIN " + channel + CRLF)
-
 /**
 	* set nick name.
 */
 #define RPL_NICK(nick, newNick) (":" + nick + " NICK " + newNick + " :" + nick + " has changed their nickname to " + newNick + CRLF)
+/**
+ * invit client to join the channel.
+*/
+#define RPL_INVITE(nick, channel) ("INVTIE " + nick + " " + channel + CRLF)
+/**
+ * create topic
+*/
+#define RPL_NEWTOPIC(channel, topic) ("TOPIC " + channel + " :" + topic + CRLF)
 
-#define RPL_WELCOME(nick, user, host) ("001 " + nick + " :Welcome to the IRC server, " + nick + "!" + user + "@" + host + CRLF)
-
-// ":" + oldNickname + " NICK " + user->getNickname() + " :" + oldNickname + " has changed their nickname to " + user->getNickname() + "\r\n";
 ////Function
 
 std::vector<std::string> splitString(const std::string &input, char delimiter);
