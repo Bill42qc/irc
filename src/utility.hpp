@@ -186,7 +186,7 @@
 /**
  * invit client to join the channel.
 */
-#define RPL_INVITE(nick, channel) ("INVTIE " + nick + " " + channel + CRLF)
+#define RPL_INVITE(client , newClient, channel) (":" + client +  " INVITE " + newClient + " " + channel + CRLF)
 /**
  * create topic
 */

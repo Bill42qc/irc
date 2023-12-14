@@ -238,7 +238,7 @@ void Server::broadcastMessage(const std::string& message, Client &client) {
 			// Send the message to all clients except the sender
 			clientVector_[i].send(client.getUserName() + ": ");
 			clientVector_[i].send(message);
-			clientVector_[i].send("\n");
+			clientVector_[i].send("\n\r");
 		}
 	}
 }
