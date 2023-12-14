@@ -128,8 +128,13 @@
  * ERR_USERONCHANNEL (443)
  * Returned when a client tries to invite <nick> to a channel they’re already joined to.
 */
-#define ERR_USERONCHANNEL(client, nick, channel) ("443 " + client " " + nick  + " " + channel + " :is already on channel")
-
+#define ERR_USERONCHANNEL(client, nick, channel) ("443 " + client " " + nick  + " " + channel + " :is already on channel" + CRLF)
+/**
+ * ERR_USERNOTINCHANNEL (441)
+ * Returned when a client tries to perform a channel+nick affecting command,
+ * when the nick isn’t joined to the channel (for example, MODE #channel +o nick).
+*/
+#define ERR_USERNOTINCHANNEL(client, nick, channel) ("441 " + client + " " + nick + " " + channel + " :They aren't on that channel" + CRLF)
 // RPL CORRECT //
 
 /**
@@ -169,7 +174,7 @@
  * Sent as a reply to the INVITE command to indicate that the attempt
  * was successful and the client with the nickname <nick> has been invited to <channel>.
 */
-#define RPL_INVITING(client, nick, channel) ("341 " + client " " + nick  + " " + channel)
+#define RPL_INVITING(client, nick, channel) ("341 " + client + " " + nick  + " " + channel + CRLF)
 /**
 	* Join a chanel
 */
@@ -181,7 +186,11 @@
 /**
  * invit client to join the channel.
 */
-#define RPL_INVITE(nick, channel) ("INVTIE " + nick + " " + channel)
+#define RPL_INVITE(nick, channel) ("INVTIE " + nick + " " + channel + CRLF)
+/**
+ * create topic
+*/
+#define RPL_NEWTOPIC(channel, topic) ("TOPIC " + channel + " :" + topic)
 
 ////Function
 

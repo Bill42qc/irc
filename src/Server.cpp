@@ -223,7 +223,7 @@ void Server::addChannel(Channel &channel){
 	channelVector_.push_back(channel);
 }
 
-Channel &Server::getChannel(std::string &name){
+Channel &Server::getChannel(std::string const &name){
 	for (unsigned long i = 0;  i < channelVector_.size(); ++i){
 		if (channelVector_[i] == name){
 			return channelVector_[i];

@@ -1,4 +1,4 @@
-.DEFAULT_GOAL: all
+/.DEFAULT_GOAL: all
 .DELETE_ON_ERROR:
 .PHONY: all bonus clean fclean re
 
@@ -26,7 +26,7 @@ SRCS	=	main.cpp \
 			Topic.cpp \
 			utility.cpp \
 			serverCommand.cpp\
-			
+
 SRCS_DIR = src
 # Objects are all .o files
 OBJS_DIR	=	bin
@@ -79,6 +79,6 @@ wee: $(NAME)
 	docker run -it --rm --name weechat-container weechat/weechat /bin/sh -c \
 		"weechat --run-command '/server add irc host.docker.internal/6667 -notls -password=PASSWORD123'"
 
-	
+
 
 -include $(OBJS:.o=.d)

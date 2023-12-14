@@ -46,7 +46,7 @@ public:
 
 	// Functions
 
-	Channel &getChannel(std::string &name);
+	Channel &getChannel(std::string const &name);
 	void shutdown();
 	void joinChannel(std::string name, Client &client);
 	void init(const std::string &port, const std::string &password);

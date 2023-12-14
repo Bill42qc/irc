@@ -109,12 +109,12 @@ ACommand *Server::commandFactory(Client &client){
 		if (command == "KICK")
 			return (new Kick(channel, client, command_));
 		if (command == "INVITE")
-			return (new Invite(channel, client, command_));
+			return (new Invite(channel, client, command_, *this));
 		if (command == "MODE")
 			return (new Mode(channel, client, command_));
 	}
 	catch (std::exception &e){
-			client.send("no such channel"); // envoyer la bonne erreur 
+			client.send("no such channel"); // envoyer la bonne erreur
 	}
 	throw std::runtime_error(""); //will never go there but need it for compilation
 }
