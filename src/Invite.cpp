@@ -4,23 +4,36 @@
 Invite::~Invite(){
 }
 
+
 void Invite::exe() const
 {
-
+	try {
+		if (args_.size() != 3) {
+			sender_.send(ERR_NEEDMOREPARAMS(sender_.getNickName(), args_[0]));
+			return ;
+		}
+		Client &invit = serv_.getClientByNickName(args_[1]);
+		try {
+			channel_.getClientByNickName(invit.getNickName());
+			sender_.send(ERR_USERONCHANNEL(sender_.getNickName(), args_[1], channel_.getName()));
+		}
+		catch (std::exception){
+			if (channel_.getIsInviteOnly() == true) {
+				if (channel_.isOperator(sender_) == false)
+					sender_.send(ERR_CHANOPRIVSNEEDED(sender_.getNickName(), channel_.getName()));
+				else {
+					channel_.addInviteList(invit);
+					sender_.send(RPL_INVITING(sender_.getNickName(), args_[1], channel_.getName()));
+					invit.send(RPL_INVITE(sender_.getNickName(), invit.getNickName(), channel_.getName()));
+				}
+			}
+			else {
+				sender_.send(RPL_INVITING(sender_.getNickName(), args_[1], channel_.getName()));
+				invit.send(RPL_INVITE(sender_.getNickName(), invit.getNickName(), channel_.getName()));
+			}
+		}
+	}
+	catch(std::exception &e) {
+		return ;
+	}
 }
-
-/*
-	si j'ai bien 3 arguments (IVNITE, nick, channel)
-
-		sinon si le demandeur n'est pas client du channel
-			return ERR_NOTONCHANNEL
-		sinon si le channel est en invitation seulement et que le demandeur n'est pas operator
-			return ERR_CHANOPRIVSNEEDED
-		sinon si le nick est deja sur le channel
-			return ERR_USERONCHANNEL
-		else
-			envoyer RPL_INVITING au client demandeur
-			envoyer RPL_INVITE au client visé
-	else
-		return ERR_ERR_NEEDMOREPARAMS
-*/

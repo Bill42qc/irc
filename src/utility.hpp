@@ -33,9 +33,9 @@
 #define ERR_NICKNAMEINUSE(client, nick) ("433 " + client + nick + " :Nickname is already in use" + CRLF)
 #define ERR_NICKCOLLISION(client, nick, user, host) ("436 " + client + nick + " :Nickname collision KILL from" + user + host CRLF)
 #define ERR_USERNOTINCHANNEL(client, nick, channel) ("441 " + client + " " + nick + " " + channel + " :They aren't on that channel" + CRLF)
-#define ERR_NOTONCHANNEL(client, nick, channel) ("442 " + client + " " + channel + " :You're not on that channel" + CRLF)
-#define ERR_USERONCHANNEL(client, nick, channel) ("443 " + client " " + nick  + " " + channel + " :is already on channel" + CRLF)
-#define ERR_NEEDMOREPARAMS(client, command) ("461 " + client + command + " :Not enough parameters" + CRLF)
+#define ERR_NOTONCHANNEL(client, channel) ("442 " + client + " " + channel + " :You're not on that channel" + CRLF)
+#define ERR_USERONCHANNEL(client, nick, channel) ("443 " + client + " " + nick  + " " + channel + " :is already on channel" + CRLF)
+#define ERR_NEEDMOREPARAMS(client, command) ("461 " + client + " " + command + " :Not enough parameters" + CRLF)
 #define ERR_ALREADYREGISTERED(client) ("462 " + client + command + " :You may not reregister" + CRLF)
 #define ERR_PASSWDMISMATCH(client) ("464 " + client + " :Password incorrect" + CRLF)
 #define ERR_CHANNELISFULL(client, channel) ("471 " + client + channel + " :Cannot join channel (+l)" + CRLF)
@@ -62,8 +62,10 @@
 #define RPL_INVITE(client , newClient, channel) (":" + client +  " INVITE " + newClient + " " + channel + CRLF)
 #define RPL_NEWTOPIC(channel, topic) ("TOPIC " + channel + " :" + topic + CRLF)
 #define RPL_PART(client, channel) (client + " PART " + channel + CRLF)
-#define RPL_MSGONECLIENT(sender, recept) (sender + " PRIVMSG " + recept + CRLF)
-#define	RPL_MSGCHANNEL(sender, channel) (sender + " PRIVMSG " + channel + CRLF)
+#define RPL_MSGONECLIENT(sender, recept, msg) (":" + sender + " PRIVMSG " + recept + " :" + msg + CRLF)
+#define	RPL_MSGCHANNEL(sender, channel, msg) (":" + sender + " PRIVMSG " + channel + " :" + msg + CRLF)
+#define RPL_KICKED(nick, channel, kickNick, msg) (":" + nick + " KICK " + channel + " " + kickNick + " :" + msg + CRLF)
+#define RPL_KICKER(channel, kickNick, msg) (":irc KICK " + channel + " " + kickNick + " :" + msg + CRLF)
 
 
 ////Function

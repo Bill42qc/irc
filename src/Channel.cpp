@@ -68,7 +68,6 @@ void Channel::removeOperator(Client &client){
 	}
 }
 
-
 ///@brief
 //tell if a client is an operator for the current channel
 ///@param
@@ -129,24 +128,28 @@ Client &Channel::getClientByNickName(std::string name){
 		if (clientVector_[i].getNickName() == name)
 			return clientVector_[i];
 	}
-	throw std::runtime_error("Client not found");//TODO changer pour le code d'erreur
+	printf("test\n");
+	throw std::runtime_error("Client not found");
 }
 
 
 void Channel::joinChannel(Client &client){
 	if (!needPassword_)
 	{
-		std::cout << "bravo " << client.getNickName() << "you join join " << name_ << std::endl;
+		std::cout << "bravo " << client.getNickName() << " you join join " << name_ << std::endl;
 		addClient(client);
+		return ;
 	}
 	throw std::runtime_error("need password");//TODO changer pour le code d'erreur
 
 }
 
 void Channel::joinChannel(Client &client,const std::string &password){
-		std::cout << "bravo " << client.getNickName() << "you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
-	if (password == password_)
+		std::cout << "bravo " << client.getNickName() << " you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
+	if (password == password_) {
 		addClient(client);
+		return ;
+	}
 	throw std::runtime_error(ERR_PASSWDMISMATCH(client.getNickName()));
 }
 

@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "utility.hpp"
 
 void Server::parsMsg(std::string const &recept, Client &client)
 {
@@ -37,7 +38,34 @@ void Server::pass(Client &client){
 }
 
 void Server::privmsg(Client &client){
-	std::cout << "this shit still not done " << client.getNickName() <<std::endl;
+
+
+	size_t i = client.getMSG().find(':');
+	std::string msg;
+	if (i == std::string::npos) {
+		client.send(ERR_NEEDMOREPARAMS(client.getNickName(), "PRIVMSG"));
+	}
+	else{
+		msg = client.getMSG().substr(i + 1);
+	}
+	if (command_[1][0] == '#'){
+		try {
+			Channel &chan = getChannel(command_[1]);
+			chan.broadcastEveryoneElse(RPL_MSGCHANNEL(client.getNickName(), chan.getName(), msg), client);
+		}
+		catch (std::exception){
+			client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[1]));
+		}
+	}
+	else {
+		try {
+			Client &recipient = getClientByNickName(command_[1]);
+			recipient.send(RPL_MSGONECLIENT(client.getNickName(), recipient.getNickName(), msg));
+		}
+		catch (std::exception){
+			client.send(ERR_NOSUCHNICK(client.getNickName(), command_[1]));
+		}
+	}
 }
 
 void Server::join(Client &client)
@@ -57,6 +85,10 @@ void Server::join(Client &client)
 					throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
 				}
 			}
+			if (command_.size() > 2)
+				channel.joinChannel(client, command_[2]);
+			else
+				channel.joinChannel(client);
 			client.send(RPL_JOIN(client.getNickName(), command_[1]));
 			client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
 		}
@@ -102,7 +134,7 @@ ACommand *Server::commandFactory(Client &client){
 	if (!(command == "TOPIC" || command == "KICK" || command == "INVITE" || command == "MODE"))
 		throw std::runtime_error(""); //avoid next try catch if its not a channel command
 	try{
-		Channel &channel = getChannel(command_[1]);
+		Channel &channel = getChannel(command_[2]);
 
 		if (command == "TOPIC")
 			return (new Topic(channel, client, command_));
@@ -114,7 +146,7 @@ ACommand *Server::commandFactory(Client &client){
 			return (new Mode(channel, client, command_));
 	}
 	catch (std::exception &e){
-			client.send("no such channel"); // envoyer la bonne erreur
+			client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[1])); // envoyer la bonne erreur
 	}
-	throw std::runtime_error(""); //will never go there but need it for compilation
+	throw std::runtime_error(""); //EVERYTHING else we just ignore it
 }
