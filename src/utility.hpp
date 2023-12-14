@@ -148,6 +148,17 @@
 /**
 	* set nick name.
 */
+
+#define RPL_KICKER(channel, kickNick, msg) (":irc KICK " + channel + " " + kickNick + " :" + msg + CRLF)
+/**
+	* reply to the user that kicker an other user **
+*/
+
+#define RPL_KICKED(nick, channel, kickNick, msg) (":" + nick + " KICK " + channel + " " + kickNick + " :" + msg + CRLF)
+/**
+	*  reply to the user that got kicked **
+*/
+
 #define RPL_NICK(nick, newNick) (":" + nick + " NICK " + newNick + " :" + nick + " has changed their nickname to " + newNick + CRLF)
 
 #define RPL_WELCOME(nick, user, host) ("001 " + nick + " :Welcome to the IRC server, " + nick + "!" + user + "@" + host + CRLF)

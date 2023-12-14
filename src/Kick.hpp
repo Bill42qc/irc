@@ -8,7 +8,7 @@ class Channel;
 class Kick: public ACommand
 {
 private:
-	Client &kick_;
+
 public:
 	// Constructors / Destructor
 	Kick(Channel &channel, Client &sender, std::vector<std::string> v);
