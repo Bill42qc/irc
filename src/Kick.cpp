@@ -18,7 +18,7 @@ void Kick::exe() const
 		try{
 			Client &kicked = channel_.getClientByNickName(args_[2]);
 			size_t i = sender_.getMSG().find(':');
-			if (i != std::string::npos) {
+			if (i == std::string::npos) {
 				kicked.send(RPL_KICKED(sender_.getNickName(), channel_.getName(), kicked.getNickName(), DEFAULT_KICK_MSG));
 				sender_.send(RPL_KICKER(channel_.getName(), kicked.getNickName(), DEFAULT_KICK_MSG));
 				channel_.removeClient(kicked);

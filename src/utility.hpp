@@ -65,7 +65,7 @@
 #define RPL_MSGONECLIENT(sender, recept, msg) (":" + sender + " PRIVMSG " + recept + " :" + msg + CRLF)
 #define	RPL_MSGCHANNEL(sender, channel, msg) (":" + sender + " PRIVMSG " + channel + " :" + msg + CRLF)
 #define RPL_KICKED(nick, channel, kickNick, msg) (":" + nick + " KICK " + channel + " " + kickNick + " :" + msg + CRLF)
-#define RPL_KICKER(channel, kickNick, msg) (":irc KICK " + channel + " " + kickNick + " :" + msg + CRLF)
+#define RPL_KICKER(channel, kickNick, msg) (": KICK " + channel + " " + kickNick + " :" + msg + CRLF)
 
 
 ////Function

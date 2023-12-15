@@ -51,6 +51,13 @@ void Server::privmsg(Client &client){
 	if (command_[1][0] == '#'){
 		try {
 			Channel &chan = getChannel(command_[1]);
+			try{
+				chan.getClientByNickName(client.getNickName());
+			}
+			catch (std::exception){
+				client.send(ERR_NOTONCHANNEL(client.getNickName(), chan.getName()));
+				return ;
+			}
 			chan.broadcastEveryoneElse(RPL_MSGCHANNEL(client.getNickName(), chan.getName(), msg), client);
 		}
 		catch (std::exception){
@@ -133,9 +140,25 @@ ACommand *Server::commandFactory(Client &client){
 	std::string command = command_[0];
 	if (!(command == "TOPIC" || command == "KICK" || command == "INVITE" || command == "MODE"))
 		throw std::runtime_error(""); //avoid next try catch if its not a channel command
-	try{
-		Channel &channel = getChannel(command_[2]);
 
+	try{
+		if (command_.size() > 2)
+				client.send(ERR_NEEDMOREPARAMS(client.getNickName() ,command));
+		std::string chanName = command_[1];
+		if (command == "INVITE"){
+			if (command_.size() > 3)
+				client.send(ERR_NEEDMOREPARAMS(client.getNickName() ,command));
+			chanName = command_[2];
+		}
+
+		Channel &channel = getChannel(chanName);
+		try{
+			channel.getClientByNickName(client.getNickName());
+		}
+		catch (std::exception){
+			client.send(ERR_NOTONCHANNEL(client.getNickName(), channel.getName()));
+			throw std::runtime_error("");
+		}
 		if (command == "TOPIC")
 			return (new Topic(channel, client, command_));
 		if (command == "KICK")
