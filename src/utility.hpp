@@ -22,7 +22,7 @@
 
 #define ERR_NOSUCHNICK(client, nick) ("401 " + client + " " + nick + " :No such nick/channel" + CRLF)
 #define ERR_NOSUCHSERVER(client, serverName) ("402 " + client + " " + serverName + " :No such server" + CRLF)
-#define ERR_NOSUCHCHANNEL(client, channel) ("403 " + client + channel + " :No such channel" + CRLF)
+#define ERR_NOSUCHCHANNEL(client, channel) ("403 " + client + " " + channel + " :No such channel" + CRLF)
 #define ERR_CANNOTSENDTOCHAN(client, channel) ("404 " + client + " " + channel + " :Cannot send to channel" + CRLF)
 #define ERR_TOOMANYCHANNELS(client, channel) ("405 " + client + channel + " :You have joined too many channels" + CRLF)
 #define ERR_NOORIGIN(client) ("409 " + client + " :No origin specified" + CRLF)
@@ -61,12 +61,11 @@
 #define RPL_JOIN(nick, channel) (":" + nick + " JOIN " + channel + CRLF)
 #define RPL_INVITE(client , newClient, channel) (":" + client +  " INVITE " + newClient + " " + channel + CRLF)
 #define RPL_NEWTOPIC(channel, topic) ("TOPIC " + channel + " :" + topic + CRLF)
-#define RPL_PART(client, channel) (client + " PART " + channel + CRLF)
+#define RPL_PART(client, channel) (":" + client + " PART " + channel + CRLF)
 #define RPL_MSGONECLIENT(sender, recept, msg) (":" + sender + " PRIVMSG " + recept + " :" + msg + CRLF)
 #define	RPL_MSGCHANNEL(sender, channel, msg) (":" + sender + " PRIVMSG " + channel + " :" + msg + CRLF)
 #define RPL_KICKED(nick, channel, kickNick, msg) (":" + nick + " KICK " + channel + " " + kickNick + " :" + msg + CRLF)
 #define RPL_KICKER(channel, kickNick, msg) (": KICK " + channel + " " + kickNick + " :" + msg + CRLF)
-
 
 ////Function
 

@@ -8,10 +8,6 @@ Invite::~Invite(){
 void Invite::exe() const
 {
 	try {
-		if (args_.size() != 3) {
-			sender_.send(ERR_NEEDMOREPARAMS(sender_.getNickName(), args_[0]));
-			return ;
-		}
 		Client &invit = serv_.getClientByNickName(args_[1]);
 		try {
 			channel_.getClientByNickName(invit.getNickName());
@@ -34,6 +30,7 @@ void Invite::exe() const
 		}
 	}
 	catch(std::exception &e) {
+		sender_.send("400 " + args_[1] + " doesn't exist" + CRLF);
 		return ;
 	}
 }

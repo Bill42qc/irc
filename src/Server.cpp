@@ -36,7 +36,8 @@ void Server::handleClientInput(int i){
 				ACommand *cmd = commandFactory(client);
 				cmd->exe();
 				delete (cmd);
-			} catch (std::exception &e){}//doing nothing is fine here we just stop doing useless stuff
+			}
+			catch (std::exception &e){}//doing nothing is fine here we just stop doing useless stuff
 			client.resetMSG();
 		}
 	}

@@ -63,6 +63,7 @@ public:
 	void pass(Client &client);
 	void nick(Client &client);
 	void join(Client &client);
+	void part(Client &client);
 	ACommand *commandFactory(Client &client);
 
 	Client &getClient(int i){return clientVector_[i];}

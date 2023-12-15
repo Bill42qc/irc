@@ -9,18 +9,27 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	// 	client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	if(command_[0] == "PING"){
 		handlePing(client);
+		return ;
 	}
 	if(command_[0] == "JOIN"){
 		join(client);
+		return ;
 	}
 	if (command_[0] == "NICK") {
 		nick(client);
+		return ;
 	}
 	if (command_[0] == "PASS") {
 		pass(client);
+		return ;
 	}
 	if (command_[0] == "PRIVMSG") {
 		privmsg(client);
+		return ;
+	}
+	if (command_[0] == "PART") {
+		part(client);
+	return ;
 	}
 }
 
@@ -77,7 +86,6 @@ void Server::privmsg(Client &client){
 
 void Server::join(Client &client)
 {
-	//verification pour rejoindre channel
 	try{
 		Channel &channel = getChannel(command_[1]);
 		try{
@@ -105,9 +113,9 @@ void Server::join(Client &client)
 	}
 	catch(std::exception){
 		joinChannel(command_[1], client);
-		client.setUserName("user");
-		client.setHostName("host");
-		std::cout << "nick: " << client.getNickName() << std::endl << "User: " << client.getUserName() << std::endl << "Host: " << client.getHostName() << std::endl << "channel: " << getChannel(command_[1]).getName() << std::endl;
+		// client.setUserName("user");
+		// client.setHostName("host");
+		// std::cout << "nick: " << client.getNickName() << std::endl << "User: " << client.getUserName() << std::endl << "Host: " << client.getHostName() << std::endl << "channel: " << getChannel(command_[1]).getName() << std::endl;
 		client.send(RPL_JOIN(client.getNickName(), command_[1]));
 		if(getChannel(command_[1]).getTopic() != "")
 			client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
@@ -142,13 +150,15 @@ ACommand *Server::commandFactory(Client &client){
 		throw std::runtime_error(""); //avoid next try catch if its not a channel command
 
 	try{
-		if (command_.size() > 2)
-				client.send(ERR_NEEDMOREPARAMS(client.getNickName() ,command));
 		std::string chanName = command_[1];
 		if (command == "INVITE"){
-			if (command_.size() > 3)
+			if (command_.size() != 3){
 				client.send(ERR_NEEDMOREPARAMS(client.getNickName() ,command));
+			}
 			chanName = command_[2];
+		}
+		else if (command_.size() != 2) {
+				client.send(ERR_NEEDMOREPARAMS(client.getNickName() ,command));
 		}
 
 		Channel &channel = getChannel(chanName);
@@ -169,7 +179,39 @@ ACommand *Server::commandFactory(Client &client){
 			return (new Mode(channel, client, command_));
 	}
 	catch (std::exception &e){
-			client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[1])); // envoyer la bonne erreur
+			if (command_[0] == "INVITE")
+				client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[2]));
+			else
+				client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[1]));
 	}
 	throw std::runtime_error(""); //EVERYTHING else we just ignore it
+}
+
+void Server::part(Client &client) //PART #pouet :WeeChat 4.1.1
+{
+	size_t i = client.getMSG().find(':');
+	std::string msg;
+	if (i == std::string::npos) {
+		client.send(ERR_NEEDMOREPARAMS(client.getNickName(), "PART"));
+	}
+	else{
+		msg = client.getMSG().substr(i + 1);
+	}
+	if (command_[1][0] == '#' || command_[1][0] == '&'){
+		try {
+			Channel &chan = getChannel(command_[1]);
+			try{
+				chan.getClientByNickName(client.getNickName());
+			}
+			catch (std::exception){
+				client.send(ERR_NOTONCHANNEL(client.getNickName(), chan.getName()));
+				return ;
+			}
+			chan.broadcastEveryoneElse(RPL_PART(client.getNickName(), chan.getName()), client);
+			chan.removeClient(client);
+		}
+		catch (std::exception){
+			client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[1]));
+		}
+	}
 }
