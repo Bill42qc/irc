@@ -1,31 +1,37 @@
 #include "Server.hpp"
+#include "utility.hpp"
 
 void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
 
-	// if (command_[0] == "CAP")
-	// 	client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	if(command_[0] == "PING"){
 		handlePing(client);
+		return ;
 	}
 	if(command_[0] == "JOIN"){
 		join(client);
+		return ;
 	}
 	if (command_[0] == "NICK") {
 		nick(client);
+		return ;
 	}
 	if (command_[0] == "PASS") {
 		pass(client);
+		return ;
 	}
 	if (command_[0] == "PRIVMSG") {
 		privmsg(client);
+		return ;
+	}
+	if (command_[0] == "PART") {
+		part(client);
+	return ;
 	}
 }
 
 void Server::nick(Client &client){
-	std::cout << client.getNickName() << ": je suis la " << std::endl;
-	std::cout << command_[1] << " je aussi ici " << std::endl;
 	client.send(RPL_NICK(client.getNickName(), command_[1]));
 	client.setNickName(command_[1]);
 }
@@ -37,12 +43,45 @@ void Server::pass(Client &client){
 }
 
 void Server::privmsg(Client &client){
-	std::cout << "this shit still not done " << client.getNickName() <<std::endl;
+
+
+	size_t i = client.getMSG().find(':');
+	std::string msg;
+	if (i == std::string::npos) {
+		client.send(ERR_NEEDMOREPARAMS(client.getNickName(), "PRIVMSG"));
+	}
+	else{
+		msg = client.getMSG().substr(i + 1);
+	}
+	if (command_[1][0] == '#'){
+		try {
+			Channel &chan = getChannel(command_[1]);
+			try{
+				chan.getClientByNickName(client.getNickName());
+			}
+			catch (std::exception){
+				client.send(ERR_NOTONCHANNEL(client.getNickName(), chan.getName()));
+				return ;
+			}
+			chan.broadcastEveryoneElse(RPL_MSGCHANNEL(client.getNickName(), chan.getName(), msg), client);
+		}
+		catch (std::exception){
+			client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[1]));
+		}
+	}
+	else {
+		try {
+			Client &recipient = getClientByNickName(command_[1]);
+			recipient.send(RPL_MSGONECLIENT(client.getNickName(), recipient.getNickName(), msg));
+		}
+		catch (std::exception){
+			client.send(ERR_NOSUCHNICK(client.getNickName(), command_[1]));
+		}
+	}
 }
 
 void Server::join(Client &client)
 {
-	//verification pour rejoindre channel
 	try{
 		Channel &channel = getChannel(command_[1]);
 		try{
@@ -57,21 +96,26 @@ void Server::join(Client &client)
 					throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
 				}
 			}
-			client.send(RPL_JOIN(client.getNickName(), command_[1]));
-			client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
+			else if (command_.size() > 2)
+				channel.joinChannel(client, command_[2]);
+
+			else {
+				channel.joinChannel(client);
+				client.send(RPL_JOIN(client.getNickName(), command_[1]));
+				client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
+				getChannel(command_[1]).broadcastUserList(client);
+			}
 		}
 		catch (std::exception &e){
 			std::cerr << e.what() << CRLF;
 		}
 	}
-	catch(std::exception){
+	catch(std::exception) {
 		joinChannel(command_[1], client);
-		client.setUserName("user");
-		client.setHostName("host");
-		std::cout << "nick: " << client.getNickName() << std::endl << "User: " << client.getUserName() << std::endl << "Host: " << client.getHostName() << std::endl << "channel: " << getChannel(command_[1]).getName() << std::endl;
 		client.send(RPL_JOIN(client.getNickName(), command_[1]));
-		if(getChannel(command_[1]).getTopic() != "")
-			client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
+		client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
+		getChannel(command_[1]).sendUserList(client);
+		getChannel(command_[1]).setNeedPassword_(false);
 	}
 }
 
@@ -101,20 +145,70 @@ ACommand *Server::commandFactory(Client &client){
 	std::string command = command_[0];
 	if (!(command == "TOPIC" || command == "KICK" || command == "INVITE" || command == "MODE"))
 		throw std::runtime_error(""); //avoid next try catch if its not a channel command
-	try{
-		Channel &channel = getChannel(command_[1]);
 
+	try{
+		std::string chanName = command_[1];
+		if (command == "INVITE"){
+			if (command_.size() != 3){
+				client.send(ERR_NEEDMOREPARAMS(client.getNickName() ,command));
+			}
+			chanName = command_[2];
+		}
+		else if (command_.size() != 2) {
+				client.send(ERR_NEEDMOREPARAMS(client.getNickName() ,command));
+		}
+
+		Channel &channel = getChannel(chanName);
+		try{
+			channel.getClientByNickName(client.getNickName());
+		}
+		catch (std::exception){
+			client.send(ERR_NOTONCHANNEL(client.getNickName(), channel.getName()));
+			throw std::runtime_error("");
+		}
 		if (command == "TOPIC")
 			return (new Topic(channel, client, command_));
 		if (command == "KICK")
 			return (new Kick(channel, client, command_));
 		if (command == "INVITE")
-			return (new Invite(channel, client, command_));
+			return (new Invite(channel, client, command_, *this));
 		if (command == "MODE")
 			return (new Mode(channel, client, command_));
 	}
 	catch (std::exception &e){
-			client.send("no such channel"); // envoyer la bonne erreur 
+			if (command_[0] == "INVITE")
+				client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[2]));
+			else
+				client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[1]));
 	}
-	throw std::runtime_error(""); //will never go there but need it for compilation
+	throw std::runtime_error(""); //EVERYTHING else we just ignore it
+}
+
+void Server::part(Client &client)
+{
+	size_t i = client.getMSG().find(':');
+	std::string msg;
+	if (i == std::string::npos) {
+		client.send(ERR_NEEDMOREPARAMS(client.getNickName(), "PART"));
+	}
+	else{
+		msg = client.getMSG().substr(i + 1);
+	}
+	if (command_[1][0] == '#' || command_[1][0] == '&'){
+		try {
+			Channel &chan = getChannel(command_[1]);
+			try{
+				chan.getClientByNickName(client.getNickName());
+			}
+			catch (std::exception){
+				client.send(ERR_NOTONCHANNEL(client.getNickName(), chan.getName()));
+				return ;
+			}
+			chan.broadcastEveryoneElse(RPL_PART(client.getNickName(), chan.getName()), client);
+			chan.removeClient(client);
+		}
+		catch (std::exception){
+			client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[1]));
+		}
+	}
 }

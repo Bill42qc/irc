@@ -46,7 +46,7 @@ public:
 
 	// Functions
 
-	Channel &getChannel(std::string &name);
+	Channel &getChannel(std::string const &name);
 	void shutdown();
 	void joinChannel(std::string name, Client &client);
 	void init(const std::string &port, const std::string &password);
@@ -63,6 +63,8 @@ public:
 	void pass(Client &client);
 	void nick(Client &client);
 	void join(Client &client);
+	void part(Client &client);
+	void sendUserList(Client &client);
 	ACommand *commandFactory(Client &client);
 
 	Client &getClient(int i){return clientVector_[i];}

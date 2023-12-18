@@ -18,6 +18,6 @@ void Topic::exe() const
 		channel_.broadcastEveryone(sender_.getMSG() + CRLF);
 	}
 	else {
-		sender_.send("not on channel");
+		sender_.send(ERR_CHANOPRIVSNEEDED(sender_.getNickName(), channel_.getName()));
 	}
 }

@@ -1,6 +1,6 @@
 #include "Channel.hpp"
 
-Channel::Channel(const std::string &name): name_(name), userLimit_(100), isInviteOnly_(false){
+Channel::Channel(const std::string &name): name_(name), userLimit_(100), isInviteOnly_(false), needPassword_(false){
 }
 
 Channel::Channel(): name_(){
@@ -68,7 +68,6 @@ void Channel::removeOperator(Client &client){
 	}
 }
 
-
 ///@brief
 //tell if a client is an operator for the current channel
 ///@param
@@ -129,24 +128,27 @@ Client &Channel::getClientByNickName(std::string name){
 		if (clientVector_[i].getNickName() == name)
 			return clientVector_[i];
 	}
-	throw std::runtime_error("Client not found");//TODO changer pour le code d'erreur
+	throw std::runtime_error("Client not found");
 }
 
 
 void Channel::joinChannel(Client &client){
 	if (!needPassword_)
 	{
-		std::cout << "bravo " << client.getNickName() << "you join join " << name_ << std::endl;
+		std::cout << "bravo " << client.getNickName() << " you join join " << name_ << std::endl;
 		addClient(client);
+		return ;
 	}
 	throw std::runtime_error("need password");//TODO changer pour le code d'erreur
 
 }
 
 void Channel::joinChannel(Client &client,const std::string &password){
-		std::cout << "bravo " << client.getNickName() << "you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
-	if (password == password_)
+		std::cout << "bravo " << client.getNickName() << " you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
+	if (password == password_) {
 		addClient(client);
+		return ;
+	}
 	throw std::runtime_error(ERR_PASSWDMISMATCH(client.getNickName()));
 }
 
@@ -161,3 +163,29 @@ bool Channel::isOnInviteList(Client &client){
 	}
 	return false;
 }
+
+ void Channel::sendUserList(Client &client) {
+	std::string userList;
+	for (size_t i = 0; i < clientVector_.size(); i++) {
+		if(isOperator(clientVector_[i]))
+			userList += "@";
+		userList += clientVector_[i].getNickName();
+		userList += " ";
+	}
+	client.send(RPL_NAMREPLY(client.getNickName(), "=", name_, userList));
+	client.send(RPL_ENDOFNAMES(client.getNickName(), name_));
+ }
+
+ void Channel::broadcastUserList(Client &client) {
+	std::string userList;
+	std::string msg;
+	for (size_t i = 0; i < clientVector_.size(); i++) {
+		if(isOperator(clientVector_[i]))
+			userList += "@";
+		userList += clientVector_[i].getNickName();
+		userList += " ";
+	}
+	msg = "353 = " + name_ + " :" + userList + CRLF;
+	broadcastEveryone(RPL_NAMREPLY(client.getNickName(), "=", name_, userList));
+	broadcastEveryone(RPL_ENDOFNAMES(client.getNickName(), name_));
+ }

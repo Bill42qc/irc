@@ -36,7 +36,8 @@ void Server::handleClientInput(int i){
 				ACommand *cmd = commandFactory(client);
 				cmd->exe();
 				delete (cmd);
-			} catch (std::exception &e){}//doing nothing is fine here we just stop doing useless stuff
+			}
+			catch (std::exception &e){}//doing nothing is fine here we just stop doing useless stuff
 			client.resetMSG();
 		}
 	}
@@ -76,9 +77,6 @@ void Server::receiveNewConnection(){
 	Client client(clientSocket);
 	std::cout << client.getNickName() << "Je suis la "<< std::endl;
 	client.send("authenticate placeholder \r\n");
-	// std::string massage = "001 " + client.getNickName() + " :Welcome to the IRC server, user!user@host\r\n";
-	// const char* welcomeMessage = massage.c_str();
-	// send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
 	std::string nick_temp = "user";
 	client.setNickName(nick_temp);
 	client.setUserName("user");
@@ -223,7 +221,7 @@ void Server::addChannel(Channel &channel){
 	channelVector_.push_back(channel);
 }
 
-Channel &Server::getChannel(std::string &name){
+Channel &Server::getChannel(std::string const &name){
 	for (unsigned long i = 0;  i < channelVector_.size(); ++i){
 		if (channelVector_[i] == name){
 			return channelVector_[i];
@@ -238,7 +236,7 @@ void Server::broadcastMessage(const std::string& message, Client &client) {
 			// Send the message to all clients except the sender
 			clientVector_[i].send(client.getUserName() + ": ");
 			clientVector_[i].send(message);
-			clientVector_[i].send("\n");
+			clientVector_[i].send("\n\r");
 		}
 	}
 }
