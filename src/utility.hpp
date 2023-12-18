@@ -53,8 +53,8 @@
 #define RPL_TOPIC(client, channel, topic) ("332 " + client + " " + channel + " :" + topic + CRLF)
 #define RPL_TOPICWHOTIME(client, channel, nick, setat) ("333 " + client + channel + nick + setat + CRLF)
 #define RPL_INVITING(client, nick, channel) ("341 " + client + " " + nick  + " " + channel + CRLF)
-#define RPL_NAMREPLY(client, symbol, channel, prefix, nick) (":irc 353 " + client + " "  + symbol + " " + channel + " :[" + prefix + "]" + nick + "{ [" + prefix + "]" + nick + "}" + CRLF)
-#define RPL_ENDOFNAMES(client, channel) ("366 " + client + channel + " :End of /NAMES list" << CRLF)
+#define RPL_NAMREPLY(client, symbol, channel, userList) (":localhost 353 " + client + " "  + symbol + " " + channel + " :" + userList + CRLF)
+#define RPL_ENDOFNAMES(client, channel) ("366 " + client + " " + channel + " :End of /NAMES list" + CRLF)
 #define RPL_YOUREOPER(client) ("381 " + " :You are now an IRC operator" + CRLF)
 
 #define RPL_NICK(nick, newNick) (":" + nick + " NICK " + newNick + " :" + nick + " changed his nickname to " + newNick + CRLF)

@@ -1,6 +1,6 @@
 #include "Channel.hpp"
 
-Channel::Channel(const std::string &name): name_(name), userLimit_(100), isInviteOnly_(false){
+Channel::Channel(const std::string &name): name_(name), userLimit_(100), isInviteOnly_(false), needPassword_(false){
 }
 
 Channel::Channel(): name_(){
@@ -128,12 +128,12 @@ Client &Channel::getClientByNickName(std::string name){
 		if (clientVector_[i].getNickName() == name)
 			return clientVector_[i];
 	}
-	printf("test\n");
 	throw std::runtime_error("Client not found");
 }
 
 
 void Channel::joinChannel(Client &client){
+	printf("%d\n", needPassword_);
 	if (!needPassword_)
 	{
 		std::cout << "bravo " << client.getNickName() << " you join join " << name_ << std::endl;
@@ -164,3 +164,25 @@ bool Channel::isOnInviteList(Client &client){
 	}
 	return false;
 }
+
+ void Channel::sendUserList(Client &client) {
+	std::string userList;
+	for (size_t i = 0; i < clientVector_.size(); i++) {
+		userList += clientVector_[i].getNickName();
+		if (i != clientVector_.size()-1)
+			userList += " ";
+	}
+	client.send(RPL_NAMREPLY(client.getNickName(), "=", name_, userList));
+	client.send(RPL_ENDOFNAMES(client.getNickName(), name_));
+ }
+
+ void Channel::broadcastUserList(Client &client) {
+	std::string userList;
+	for (size_t i = 0; i < clientVector_.size(); i++) {
+		userList += clientVector_[i].getNickName();
+		if (i != clientVector_.size()-1)
+			userList += " ";
+	}
+	broadcastEveryone(RPL_NAMREPLY(client.getNickName(), "=", name_, userList));
+	broadcastEveryone(RPL_ENDOFNAMES(client.getNickName(), name_));
+ }

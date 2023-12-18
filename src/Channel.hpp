@@ -36,6 +36,10 @@ public:
     void broadcastEveryone(const std::string &msg);
     void broadcastEveryoneElse(const std::string &msg, Client &sender);
     void addInviteList(Client &invite);
+
+    void sendUserList(Client &client); //add pour avoir la liste des users
+    void broadcastUserList(Client &client); //add pour avoir la liste des users
+
     Client &getClientByHostName(std::string name);
     Client &getClientByUserName(std::string name);
     Client &getClientByNickName(std::string name);

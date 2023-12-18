@@ -100,23 +100,27 @@ void Server::join(Client &client)
 					throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
 				}
 			}
-			if (command_.size() > 2)
+			else if (command_.size() > 2)
 				channel.joinChannel(client, command_[2]);
-			else
+
+			else {
+				printf("LAAAAAAAA !!!!\n");
 				channel.joinChannel(client);
-			client.send(RPL_JOIN(client.getNickName(), command_[1]));
-			client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
+				client.send(RPL_JOIN(client.getNickName(), command_[1]));
+				client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
+				// getChannel(command_[1]).sendUserList(client);
+				getChannel(command_[1]).broadcastUserList(client);
+			}
 		}
-		catch (std::exception &e){
-			std::cerr << e.what() << CRLF;
+		catch (std::exception){
+			printf("ICIIIIIIIII !!!!!\n");
 		}
 	}
-	catch(std::exception){
+	catch(std::exception) {
 		joinChannel(command_[1], client);
-		// client.setUserName("user");
-		// client.setHostName("host");
-		// std::cout << "nick: " << client.getNickName() << std::endl << "User: " << client.getUserName() << std::endl << "Host: " << client.getHostName() << std::endl << "channel: " << getChannel(command_[1]).getName() << std::endl;
 		client.send(RPL_JOIN(client.getNickName(), command_[1]));
+		getChannel(command_[1]).sendUserList(client);
+		getChannel(command_[1]).setNeedPassword_(false);
 		if(getChannel(command_[1]).getTopic() != "")
 			client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
 	}
@@ -187,7 +191,7 @@ ACommand *Server::commandFactory(Client &client){
 	throw std::runtime_error(""); //EVERYTHING else we just ignore it
 }
 
-void Server::part(Client &client) //PART #pouet :WeeChat 4.1.1
+void Server::part(Client &client)
 {
 	size_t i = client.getMSG().find(':');
 	std::string msg;
