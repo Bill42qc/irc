@@ -5,8 +5,6 @@ void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
 
-	// if (command_[0] == "CAP")
-	// 	client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	if(command_[0] == "PING"){
 		handlePing(client);
 		return ;
@@ -34,8 +32,6 @@ void Server::parsMsg(std::string const &recept, Client &client)
 }
 
 void Server::nick(Client &client){
-	std::cout << client.getNickName() << ": je suis la " << std::endl;
-	std::cout << command_[1] << " je aussi ici " << std::endl;
 	client.send(RPL_NICK(client.getNickName(), command_[1]));
 	client.setNickName(command_[1]);
 }
@@ -104,25 +100,22 @@ void Server::join(Client &client)
 				channel.joinChannel(client, command_[2]);
 
 			else {
-				printf("LAAAAAAAA !!!!\n");
 				channel.joinChannel(client);
 				client.send(RPL_JOIN(client.getNickName(), command_[1]));
 				client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
-				// getChannel(command_[1]).sendUserList(client);
 				getChannel(command_[1]).broadcastUserList(client);
 			}
 		}
-		catch (std::exception){
-			printf("ICIIIIIIIII !!!!!\n");
+		catch (std::exception &e){
+			std::cerr << e.what() << CRLF;
 		}
 	}
 	catch(std::exception) {
 		joinChannel(command_[1], client);
 		client.send(RPL_JOIN(client.getNickName(), command_[1]));
+		client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
 		getChannel(command_[1]).sendUserList(client);
 		getChannel(command_[1]).setNeedPassword_(false);
-		if(getChannel(command_[1]).getTopic() != "")
-			client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
 	}
 }
 

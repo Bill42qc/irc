@@ -1,5 +1,5 @@
 #include "Kick.hpp"
-const std::string DEFAULT_KICK_MSG = "because he didn't like you. sad face :(";
+const std::string DEFAULT_KICK_MSG = "because he didn't like you. sad face :( ";
 
 Kick::Kick(Channel &channel, Client &sender, std::vector<std::string> v): ACommand(channel, sender, v)
 {

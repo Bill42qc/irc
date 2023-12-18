@@ -77,9 +77,6 @@ void Server::receiveNewConnection(){
 	Client client(clientSocket);
 	std::cout << client.getNickName() << "Je suis la "<< std::endl;
 	client.send("authenticate placeholder \r\n");
-	// std::string massage = "001 " + client.getNickName() + " :Welcome to the IRC server, user!user@host\r\n";
-	// const char* welcomeMessage = massage.c_str();
-	// send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
 	std::string nick_temp = "user";
 	client.setNickName(nick_temp);
 	client.setUserName("user");

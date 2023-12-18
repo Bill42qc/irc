@@ -133,7 +133,6 @@ Client &Channel::getClientByNickName(std::string name){
 
 
 void Channel::joinChannel(Client &client){
-	printf("%d\n", needPassword_);
 	if (!needPassword_)
 	{
 		std::cout << "bravo " << client.getNickName() << " you join join " << name_ << std::endl;
@@ -168,9 +167,10 @@ bool Channel::isOnInviteList(Client &client){
  void Channel::sendUserList(Client &client) {
 	std::string userList;
 	for (size_t i = 0; i < clientVector_.size(); i++) {
+		if(isOperator(clientVector_[i]))
+			userList += "@";
 		userList += clientVector_[i].getNickName();
-		if (i != clientVector_.size()-1)
-			userList += " ";
+		userList += " ";
 	}
 	client.send(RPL_NAMREPLY(client.getNickName(), "=", name_, userList));
 	client.send(RPL_ENDOFNAMES(client.getNickName(), name_));
@@ -178,11 +178,14 @@ bool Channel::isOnInviteList(Client &client){
 
  void Channel::broadcastUserList(Client &client) {
 	std::string userList;
+	std::string msg;
 	for (size_t i = 0; i < clientVector_.size(); i++) {
+		if(isOperator(clientVector_[i]))
+			userList += "@";
 		userList += clientVector_[i].getNickName();
-		if (i != clientVector_.size()-1)
-			userList += " ";
+		userList += " ";
 	}
+	msg = "353 = " + name_ + " :" + userList + CRLF;
 	broadcastEveryone(RPL_NAMREPLY(client.getNickName(), "=", name_, userList));
 	broadcastEveryone(RPL_ENDOFNAMES(client.getNickName(), name_));
  }
