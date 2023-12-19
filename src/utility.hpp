@@ -45,11 +45,12 @@
 #define ERR_BADCHANMASK(channel) ("476 " + channel + " :Bad Channel Mask" + CRLF)
 #define ERR_CHANOPRIVSNEEDED(client, channel) ("482 " + client + " " + channel + " :You're not channel operator" + CRLF)
 #define ERR_NOOPERHOST(client) ("491 " + client + " :No O-lines for your host" + CRLF)
-
+#define ERR_INVALIDMODEPARAM(client, channel, char , param, description) ("696 " + client + " " + channel + " " + char + " " + param + " :" + discription + CRLF)
 // RPL CORRECT //
 
 #define RPL_WELCOME(nick, user, host) ("001 " + nick + " :Welcome to the IRC server, " + nick + "!" + user + "@" + host + CRLF)
 #define RPL_AWAY(client, nick, msg) ("301 " + client + " " + nick + " :Is outline" + CRLF)
+#define RPL_CHANNELMODEIS(client, channel, mode) ("324 " + client + " " + channel + " " + mode + CRLF)
 #define RPL_TOPIC(client, channel, topic) ("332 " + client + " " + channel + " :" + topic + CRLF)
 #define RPL_TOPICWHOTIME(client, channel, nick, setat) ("333 " + client + channel + nick + setat + CRLF)
 #define RPL_INVITING(client, nick, channel) ("341 " + client + " " + nick  + " " + channel + CRLF)
