@@ -17,6 +17,7 @@ private:
     bool isInviteOnly_;
     bool isClientLimited_;
     bool needPassword_;
+    bool isTopicLimited_;
     Channel();
 public:
     // Constructors / Destructor
@@ -43,6 +44,7 @@ public:
     Client &getClientByHostName(std::string name);
     Client &getClientByUserName(std::string name);
     Client &getClientByNickName(std::string name);
+    std::string getMode();
     //inline function
     void setUserLimit(int limit){userLimit_ = limit;}
     void setInviteOnly(bool flag){isInviteOnly_ = flag;}
@@ -51,6 +53,8 @@ public:
     void setNeedPassword_(bool flag){needPassword_ = flag;}
     void setIsClientLimited_(bool flag){isClientLimited_ = flag;}
     bool getIsClientLimited_(){return isClientLimited_;}
+    bool getIsTopicLimited_(){return isTopicLimited_;}
+    void setIsTopicLimited_(bool flag){isTopicLimited_ = flag;}
     std::string &getTopic(){return topic_;}
     bool getNeedPassword(){return needPassword_;}
     bool getIsInviteOnly(){return isInviteOnly_;}

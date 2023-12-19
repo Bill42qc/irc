@@ -189,3 +189,16 @@ bool Channel::isOnInviteList(Client &client){
 	broadcastEveryone(RPL_NAMREPLY(client.getNickName(), "=", name_, userList));
 	broadcastEveryone(RPL_ENDOFNAMES(client.getNickName(), name_));
  }
+
+std::string Channel::getMode(){
+	std::string modeList = "+";
+	if ( isInviteOnly_ == true)
+		modeList + 'i';
+	if ( needPassword_ == true)
+		modeList + 'k';
+	if (isClientLimited_ == true)
+		modeList + 'l';	
+	if (isTopicLimited_ == true)
+		modeList + 't';
+	return modeList;
+}
