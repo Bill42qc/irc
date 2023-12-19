@@ -164,3 +164,16 @@ bool Channel::isOnInviteList(Client &client){
 	}
 	return false;
 }
+
+std::string Channel::getMode(){
+	std::string modeList = "+";
+	if ( isInviteOnly_ == true)
+		modeList + 'i';
+	if ( needPassword_ == true)
+		modeList + 'k';
+	if (isClientLimited_ == true)
+		modeList + 'l';	
+	if (isTopicLimited_ == true)
+		modeList + 't';
+	return modeList;
+}
