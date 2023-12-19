@@ -11,10 +11,15 @@ Server::Server(){
 Server::~Server(){
 }
 
-// bool isAuthValid (Client &client)
-// {
-
-// }
+bool isAuthValid (Client &client)
+{
+	if (client.getHasNick() == true && client.getHasPassword() == true)
+	{
+		std::cout << "AUTH IS VALIDATE" << std::endl;
+		client.setIsAuth(); //set to is auth true
+	}
+	return false;
+}
 
 void Server::handleClientInput(int i) {
     Client &client = getClient(i);
@@ -39,7 +44,7 @@ void Server::handleClientInput(int i) {
             for (size_t i = 0; i < commandChain.size(); i++) {
 				addSpaceAfterKeywords(commandChain[i]);
                 std::cout << "command chain [" << i << "]: " << commandChain[i] << std::endl;
-
+				isAuthValid(client);
                 parsMsg(commandChain[i], client);
             }
 
