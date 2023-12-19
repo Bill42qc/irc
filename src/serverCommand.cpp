@@ -96,9 +96,12 @@ void Server::join(Client &client)
 					throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
 				}
 			}
-			else if (command_.size() > 2)
+			else if (command_.size() > 2){
 				channel.joinChannel(client, command_[2]);
-
+				client.send(RPL_JOIN(client.getNickName(), command_[1]));
+				client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
+				getChannel(command_[1]).broadcastUserList(client);
+			}
 			else {
 				channel.joinChannel(client);
 				client.send(RPL_JOIN(client.getNickName(), command_[1]));
@@ -107,7 +110,7 @@ void Server::join(Client &client)
 			}
 		}
 		catch (std::exception &e){
-			std::cerr << e.what() << CRLF;
+			client.send(e.what());
 		}
 	}
 	catch(std::exception) {

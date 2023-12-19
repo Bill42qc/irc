@@ -139,8 +139,7 @@ void Channel::joinChannel(Client &client){
 		addClient(client);
 		return ;
 	}
-	throw std::runtime_error("need password");//TODO changer pour le code d'erreur
-
+	throw std::runtime_error(ERR_PASSWDMISMATCH(client.getNickName()));
 }
 
 void Channel::joinChannel(Client &client,const std::string &password){

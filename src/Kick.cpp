@@ -20,13 +20,13 @@ void Kick::exe() const
 			size_t i = sender_.getMSG().find(':');
 			if (i == std::string::npos) {
 				kicked.send(RPL_KICKED(sender_.getNickName(), channel_.getName(), kicked.getNickName(), DEFAULT_KICK_MSG));
-				sender_.send(RPL_KICKER(channel_.getName(), kicked.getNickName(), DEFAULT_KICK_MSG));
+				sender_.send(RPL_KICKED(sender_.getNickName(), channel_.getName(), kicked.getNickName(), DEFAULT_KICK_MSG));
 				channel_.removeClient(kicked);
 			}
 			else{
 				std::string kickMSG = sender_.getMSG().substr(i + 1);
 				kicked.send(RPL_KICKED(sender_.getNickName(), channel_.getName(), kicked.getNickName(), kickMSG));
-				sender_.send(RPL_KICKER(channel_.getName(), kicked.getNickName(), kickMSG));
+				sender_.send(RPL_KICKED(sender_.getNickName(), channel_.getName(), kicked.getNickName(), kickMSG));
 				channel_.removeClient(kicked);
 			}
 		}

@@ -5,19 +5,22 @@ Mode::~Mode(){
 
 void Mode::exe() const
 {
+
 	size_t lastArgUse = 3;
 	bool addOrSub = true;
 	bool unknownMode = false;
 	std::string unknownModeString = "";
+	printf("the fuck?\n");
 	if (args_.size() == 2){
 		sender_.send(RPL_CHANNELMODEIS(sender_.getNickName(), channel_.getName(), channel_.getMode()));
 		return;
 	}
-	if (channel_.isOperator(sender_) == true){
+	if (channel_.isOperator(sender_) == false){
 		sender_.send(ERR_CHANOPRIVSNEEDED(sender_.getNickName(), channel_.getName()));
 		return;
 	}
-	for (unsigned long i = 0; i < args_[2].size() - 1; i++){
+	for (unsigned long i = 0; i < args_[2].size(); i++){
+		printf("char is = %c\n", args_[2][i]);
 		if (args_[2][i] == '-'){
 			addOrSub = false;
 		}
@@ -38,8 +41,10 @@ void Mode::exe() const
 				unknownModeString += args_[2][i];
 			}
 		}
-		if (unknownMode == true)
+		if (unknownMode == true){
 			sender_.send("placeholder");
+			printf("the fuck??????\n");
+		}
 	}
 	
 
@@ -60,7 +65,7 @@ bool Mode::removeMode(char modeChar) const{
 			if (args_.size() < 4){
 				Client &deletedOP = channel_.getClientByNickName(args_[3]);
 				channel_.removeOperator(deletedOP);
-				//channel.broadcastUserList();
+				channel_.broadcastUserList(sender_);
 			}
 			
 		}
@@ -83,6 +88,7 @@ bool Mode::removeMode(char modeChar) const{
 
 bool Mode::AddMode(char modeChar, size_t *i) const{
 
+	printf("here?\n");
 	if (modeChar == 'i'){
 		printf("setting to invite only\n");
 		channel_.setInviteOnly(false);
@@ -94,13 +100,14 @@ bool Mode::AddMode(char modeChar, size_t *i) const{
 		return true;
 	}
 	if (modeChar == 'o'){
+		printf("setting setting new op\n");
 		if (args_.size() > *i)
 		{
-			printf("setting setting new op\n");
+			printf("setting setting new op2\n");
 			try{
 				Client &newOperator = channel_.getClientByNickName(args_[*i]);
 				channel_.addOperator(newOperator);
-				//channel.broadcastUserList();
+				channel_.broadcastUserList(sender_);
 			}
 			catch (std::exception &e){
 				sender_.send(ERR_USERNOTINCHANNEL(sender_.getNickName(), args_[*i], channel_.getName()));
@@ -110,9 +117,9 @@ bool Mode::AddMode(char modeChar, size_t *i) const{
 		return true;
 	}
 	if (modeChar == 'l'){
+		printf("setting user limit\n");
 		if (args_.size() > *i)
 		{
-			printf("setting user limit\n");
 			try{
 				unsigned int limit = std::stoi(args_[*i]);
 				channel_.setUserLimit(limit);
