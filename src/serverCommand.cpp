@@ -20,8 +20,12 @@ void Server::parsMsg(std::string const &recept, Client &client)
 
 	if(client.getIsAuth() == false)
 		return;
-	if(client.getIsAuth() == true)
+
+	if(client.getIsAuth() == true && client.getAuthSent() == false)
+	{
+		client.setAuthSent();
 		client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
+	}
 
 	if(command_[0] == "PING"){
 		handlePing(client);
@@ -29,6 +33,7 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	}
 	if(command_[0] == "JOIN"){
 		join(client);
+		std::cout << "JOIN BEEEN CALLLED MOTHERFUCKER" << std::endl;
 		return ;
 	}
 	if (command_[0] == "PRIVMSG") {
@@ -46,10 +51,11 @@ void Server::nick(Client &client){
 
 	if (checkClientByNickName(command_[1]) == true)
 		client.send(ERR_NICKNAMEINUSE(client.getNickName( ),command_[1]));
-	else
-	client.send(RPL_NICK(client.getNickName(), command_[1]));
+	else{
 	client.setNickName(command_[1]);
 	client.setHasNick();
+	client.send(RPL_NICK(client.getNickName(), command_[1]));
+	}
 
 }
 

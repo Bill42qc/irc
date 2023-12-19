@@ -186,7 +186,7 @@ bool Channel::isOnInviteList(Client &client){
 	}
 	msg = "353 = " + name_ + " :" + userList + CRLF;
 	broadcastEveryone(RPL_NAMREPLY(client.getNickName(), "=", name_, userList));
-	broadcastEveryone(RPL_ENDOFNAMES(client.getNickName(), name_));
+	// broadcastEveryone(RPL_ENDOFNAMES(client.getNickName(), name_));
  }
 
 std::string Channel::getMode(){

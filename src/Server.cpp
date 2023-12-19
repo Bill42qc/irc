@@ -275,7 +275,7 @@ Client &Server::getClientByNickName(std::string name){
 }
 
 bool Server::checkClientByNickName(std::string name){
-	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+	for (unsigned long i = 0; i < clientVector_.size(); i++){
 		if (clientVector_[i].getNickName() == name)
 			return true;
 	}
