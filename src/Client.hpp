@@ -15,6 +15,9 @@ private:
 	std::string clientPassword_;
 	int clientSocket_;
 	bool hasPassword_;
+	bool hasCapLs_;
+	bool hasNick_;
+	bool hasUser_;
 public:
 	// Constructors / Destructor
 	Client();
@@ -36,11 +39,17 @@ public:
 	const std::string &getUserName() const{return userName_;}
 	int getClientSocket() const{return clientSocket_;}
 	bool getHasPassword(){return hasPassword_;}
+	bool getHasCapLs(){return hasCapLs_;}
+	bool getHasNick(){return hasNick_;}
+	bool getHasUser(){return hasUser_;}
 	void setNickName(std::string &name){nickName_ = name;}
 	void setUserName(const std::string &name) { userName_ = name; }
 	void setHostName(const std::string &name) { hostName_ = name; }
 	void setPassword( std::string &name) { clientPassword_ = name; }
 	void setHasPassword(){hasPassword_ = true;}
+	void setHasCapLs(){hasCapLs_ = true;}
+	void setHasNick(){hasNick_ = true;}
+	void setHasUser(){hasUser_ = true;}
 	void catMSG(std::string msg){msg_ = msg_ + msg;}
 	void rmCarReturnMSG(){msg_ = msg_.substr(0, msg_.size() - 1);}
 	void resetMSG(){msg_ = "";}

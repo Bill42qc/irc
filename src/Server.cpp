@@ -11,46 +11,51 @@ Server::Server(){
 Server::~Server(){
 }
 
-///@brief
-//handles the data send by a socket
-///@param
-//i : the index of the client that send data
-void Server::handleClientInput(int i){
 
-	Client &client = getClient(i);
-	int	clientSocket = client.getClientSocket();
-	char buffer[BUFFER_SIZE];
-	bzero(buffer, sizeof(buffer));
-	ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
+void Server::handleClientInput(int i) {
+    Client &client = getClient(i);
+    int clientSocket = client.getClientSocket();
+    char buffer[BUFFER_SIZE];
+    bzero(buffer, sizeof(buffer));
 
-	if (bytesRead > 0) {
-		bool hasNL = (buffer[bytesRead - 1] == '\n'? true : false);
-		if (hasNL)
-			buffer[bytesRead - 1] = 0;
-		client.catMSG(buffer);
-		if (buffer[bytesRead - 2] == 13 && hasNL){
-			client.rmCarReturnMSG(); //remove the charriot return (\r) so its easier to parse
-			std::cout <<GRE "Received data from client: " WHT<< client.getMSG() << std::endl;
-			parsMsg(client.getMSG(), client);
-			try {
-				ACommand *cmd = commandFactory(client);
-				cmd->exe();
-				delete (cmd);
-			}
-			catch (std::exception &e){}//doing nothing is fine here we just stop doing useless stuff
-			client.resetMSG();
-		}
-	}
-	else if (bytesRead == 0) {
-		// Connection closed by the client
-		std::cout << "Connection closed by client." << std::endl;
-		close(clientSocket);
-		removeClient(i);
-		pollfd_.erase(pollfd_.begin()+i+1);
-	}
-	else {
-		throw RecvException();
-	}
+    ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+    if (bytesRead > 0) {
+        client.catMSG(buffer);
+        
+        if (buffer[bytesRead - 2] == 13) {
+           
+            std::cout << "Received data client: " << client.getMSG() << std::endl;
+			std::string tmpStr = client.getMSG();
+
+			// Remove newline characters '\n' before splitting on '\r'
+            removeNewlines(tmpStr);
+            std::vector<std::string> commandChain = splitString(tmpStr, '\r'); 
+
+            for (size_t i = 0; i < commandChain.size(); i++) {
+				addSpaceAfterKeywords(commandChain[i]);
+                std::cout << "command chain [" << i << "]: " << commandChain[i] << std::endl;
+                parsMsg(commandChain[i], client);
+            }
+
+            try {
+                ACommand *cmd = commandFactory(client);
+                cmd->exe();
+                delete cmd;
+            } catch (std::exception &) {
+                // Doing nothing is fine; we just stop doing useless stuff
+            }
+            client.resetMSG();
+        }
+    } else if (bytesRead == 0) {
+        // Connection closed by the client
+        std::cout << "Connection closed by client." << std::endl;
+        close(clientSocket);
+        removeClient(i);
+        pollfd_.erase(pollfd_.begin() + i + 1);
+    } else {
+        throw RecvException();
+    }
 }
 
 ///@brief
@@ -75,8 +80,10 @@ void Server::receiveNewConnection(){
 	pollfd_.push_back(clientfd);
 
 	Client client(clientSocket);
-	std::cout << client.getNickName() << "Je suis la "<< std::endl;
 	client.send("authenticate placeholder \r\n");
+	// std::string massage = "001 " + client.getNickName() + " :Welcome to the IRC server, user!user@host\r\n";
+	// const char* welcomeMessage = massage.c_str();
+	// send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
 	std::string nick_temp = "user";
 	client.setNickName(nick_temp);
 	client.setUserName("user");
@@ -221,7 +228,7 @@ void Server::addChannel(Channel &channel){
 	channelVector_.push_back(channel);
 }
 
-Channel &Server::getChannel(std::string const &name){
+Channel &Server::getChannel(std::string &name){
 	for (unsigned long i = 0;  i < channelVector_.size(); ++i){
 		if (channelVector_[i] == name){
 			return channelVector_[i];
@@ -236,7 +243,7 @@ void Server::broadcastMessage(const std::string& message, Client &client) {
 			// Send the message to all clients except the sender
 			clientVector_[i].send(client.getUserName() + ": ");
 			clientVector_[i].send(message);
-			clientVector_[i].send("\n\r");
+			clientVector_[i].send("\n");
 		}
 	}
 }

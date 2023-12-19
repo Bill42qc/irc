@@ -9,6 +9,9 @@ void Server::parsMsg(std::string const &recept, Client &client)
 		handlePing(client);
 		return ;
 	}
+	if (command_[0] == "CAP LS 302") {
+		client.setHasCapLs();
+	}
 	if(command_[0] == "JOIN"){
 		join(client);
 		return ;

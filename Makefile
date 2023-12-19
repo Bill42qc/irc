@@ -67,7 +67,7 @@ leaks: $(NAME)
 	leaks -atExit -- ./$(NAME)
 
 run: $(NAME)
-	./$(NAME) 6667 PASSWORD123
+	./$(NAME) 6667 PASSWORD123 | cat -e
 
 nc:
 	nc 127.0.0.1 6667

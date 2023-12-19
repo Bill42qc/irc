@@ -71,6 +71,9 @@ public:
 	Client &getClientByHostName(std::string name);
 	Client &getClientByUserName(std::string name);
 	Client &getClientByNickName(std::string name);
+	Channel &getChannel(std::string &name);
+
+
 	class SocketException : public std::exception {
 	public:
 		const char* what() const throw(){return "Error creating socket.";}
