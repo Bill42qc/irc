@@ -24,7 +24,7 @@ class Server
 {
 private:
 	//variable
-	std::vector<Client> clientVector_;
+	std::vector<Client> clientVector_;  //la liste des clients
 	std::vector<struct pollfd> pollfd_;
 	std::vector<Channel> channelVector_;
 	//vecteur de la commande recu
@@ -72,6 +72,7 @@ public:
 	Client &getClientByUserName(std::string name);
 	Client &getClientByNickName(std::string name);
 	Channel &getChannel(std::string &name);
+	bool checkClientByNickName(std::string name);
 
 
 	class SocketException : public std::exception {

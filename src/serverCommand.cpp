@@ -1,27 +1,34 @@
 #include "Server.hpp"
 #include "utility.hpp"
 
+
 void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
 
-	if(command_[0] == "PING"){
-		handlePing(client);
-		return ;
-	}
 	if (command_[0] == "CAP LS 302") {
 		client.setHasCapLs();
 	}
-	if(command_[0] == "JOIN"){
-		join(client);
+	if (command_[0] == "PASS") {
+		pass(client);
 		return ;
 	}
 	if (command_[0] == "NICK") {
 		nick(client);
 		return ;
 	}
-	if (command_[0] == "PASS") {
-		pass(client);
+
+	if(client.getIsAuth() == false)
+		return;
+	if(client.getIsAuth() == true)
+		client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
+
+	if(command_[0] == "PING"){
+		handlePing(client);
+		return ;
+	}
+	if(command_[0] == "JOIN"){
+		join(client);
 		return ;
 	}
 	if (command_[0] == "PRIVMSG") {
@@ -34,9 +41,16 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	}
 }
 
+
 void Server::nick(Client &client){
+
+	if (checkClientByNickName(command_[1]) == true)
+		client.send(ERR_NICKNAMEINUSE(client.getNickName( ),command_[1]));
+	else
 	client.send(RPL_NICK(client.getNickName(), command_[1]));
 	client.setNickName(command_[1]);
+	client.setHasNick();
+
 }
 
 void Server::pass(Client &client){

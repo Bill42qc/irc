@@ -11,6 +11,10 @@ Server::Server(){
 Server::~Server(){
 }
 
+// bool isAuthValid (Client &client)
+// {
+
+// }
 
 void Server::handleClientInput(int i) {
     Client &client = getClient(i);
@@ -35,6 +39,7 @@ void Server::handleClientInput(int i) {
             for (size_t i = 0; i < commandChain.size(); i++) {
 				addSpaceAfterKeywords(commandChain[i]);
                 std::cout << "command chain [" << i << "]: " << commandChain[i] << std::endl;
+
                 parsMsg(commandChain[i], client);
             }
 
@@ -80,15 +85,6 @@ void Server::receiveNewConnection(){
 	pollfd_.push_back(clientfd);
 
 	Client client(clientSocket);
-	client.send("authenticate placeholder \r\n");
-	// std::string massage = "001 " + client.getNickName() + " :Welcome to the IRC server, user!user@host\r\n";
-	// const char* welcomeMessage = massage.c_str();
-	// send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
-	std::string nick_temp = "user";
-	client.setNickName(nick_temp);
-	client.setUserName("user");
-	client.setHostName("host");
-	client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	addClient(client);
 }
 
@@ -271,6 +267,14 @@ Client &Server::getClientByNickName(std::string name){
 			return clientVector_[i];
 	}
 	throw std::runtime_error("Client not found");
+}
+
+bool Server::checkClientByNickName(std::string name){
+	for (unsigned long i = 0; i < clientVector_.size(); ++i){
+		if (clientVector_[i].getNickName() == name)
+			return true;
+	}
+	return false;
 }
 
 void Server::handlePing(Client &client) {
