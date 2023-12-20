@@ -13,11 +13,20 @@ Server::~Server(){
 
 bool isAuthValid (Client &client)
 {
-	if (client.getHasNick() == true && client.getHasPassword() == true)
+	std::cout << "checking authentificate" << std::endl;
+	if (client.getHasNick() == true && client.getHasPassword() == true && client.getIsAuth() == false)
 	{
 		std::cout << "AUTH IS VALIDATE" << std::endl;
 		client.setIsAuth(); //set to is auth true
+		client.setAuthSent();
+		client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	}
+	else{
+		if (client.getHasNick() == false) {std::cout << "nick missing" << std::endl;}
+		if (client.getHasPassword() == false) {std::cout << "password missing" << std::endl;}
+		if (client.getIsAuth() == true) {std::cout << "already auth" << std::endl;}
+	}
+	std::cout << "check done" << std::endl;
 	return false;
 }
 
@@ -36,16 +45,16 @@ void Server::handleClientInput(int i) {
            
             std::cout << "Received data client: " << client.getMSG() << std::endl;
 			std::string tmpStr = client.getMSG();
-
+			
 			// Remove newline characters '\n' before splitting on '\r'
             removeNewlines(tmpStr);
             std::vector<std::string> commandChain = splitString(tmpStr, '\r'); 
 
             for (size_t i = 0; i < commandChain.size(); i++) {
 				addSpaceAfterKeywords(commandChain[i]);
-                std::cout << "command chain [" << i << "]: " << commandChain[i] << std::endl;
-				isAuthValid(client);
+                //std::cout << "command chain [" << i << "]: " << commandChain[i] << std::endl;
                 parsMsg(commandChain[i], client);
+				isAuthValid(client);
             }
 
             try {
@@ -83,12 +92,10 @@ void Server::receiveNewConnection(){
 		std::cerr << "Error accepting connection." << std::endl;
 		throw AcceptException();
 	}
-
 	clientfd.fd = clientSocket;
 	clientfd.events = POLLIN;
 	//add the socket of the new client to the vector
 	pollfd_.push_back(clientfd);
-
 	Client client(clientSocket);
 	client.setHostName("host");
 	addClient(client);
@@ -293,6 +300,6 @@ void Server::handlePing(Client &client) {
 		std::string pongResponse = "PONG " + pingContent + CRLF;
 		client.send(pongResponse);
 
-		std::cout <<RED "Sent PONG to client: " WHT<< client.getUserName() << pongResponse << std::endl;
+		//std::cout <<RED "Sent PONG to client: " WHT<< client.getUserName() << pongResponse << std::endl;
 
 }

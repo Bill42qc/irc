@@ -8,8 +8,8 @@
 class Client
 {
 private:
-	std::string hostName_;
 	std::string msg_;
+	std::string hostName_;
 	std::string nickName_;
 	std::string userName_;
 	std::string clientPassword_;

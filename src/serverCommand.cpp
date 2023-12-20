@@ -11,44 +11,31 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	}
 	if (command_[0] == "PASS") {
 		pass(client);
-		return ;
 	}
 	if (command_[0] == "NICK") {
 		nick(client);
-		return ;
 	}
-
 	if(command_[0] == "PING"){
 		handlePing(client);
-		return ;
 	}
-	if(client.getIsAuth() == false)
+	if(client.getIsAuth() == false){
+		std::cout << "not done ???" << std::endl;
 		return;
-
-	if(client.getIsAuth() == true && client.getAuthSent() == false)
-	{
-		client.setAuthSent();
-		client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	}
-
 	if(command_[0] == "JOIN"){
+		std::cout << "got here" << std::endl;
 		join(client);
-		std::cout << "JOIN BEEEN CALLLED MOTHERFUCKER" << std::endl;
-		return ;
 	}
 	if (command_[0] == "PRIVMSG") {
 		privmsg(client);
-		return ;
 	}
 	if (command_[0] == "PART") {
 		part(client);
-	return ;
 	}
 }
 
 
 void Server::nick(Client &client){
-
 	if (checkClientByNickName(command_[1]) == true)
 		client.send(ERR_NICKNAMEINUSE(client.getNickName( ),command_[1]));
 	else{
@@ -105,6 +92,7 @@ void Server::privmsg(Client &client){
 
 void Server::join(Client &client)
 {
+	std::cout << "attempting to join a channel" << std::endl;
 	try{
 		Channel &channel = getChannel(command_[1]);
 		try{
