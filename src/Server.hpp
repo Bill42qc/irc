@@ -72,6 +72,8 @@ public:
 	Client &getClientByUserName(std::string name);
 	Client &getClientByNickName(std::string name);
 	Channel &getChannel(std::string &name);
+	bool checkClientByNickName(std::string name);
+	void user(Client &client);
 
 
 	class SocketException : public std::exception {

@@ -71,14 +71,18 @@ void removeCRTL(std::string& str) {
     }
 }
 
-void password_check (std::string serverPassword, std::string clientPassword)
+bool password_check (std::string serverPassword, std::string clientPassword)
 {
     std::cout << "client password before remove nl = " + clientPassword << std::endl;
     removeCRTL(clientPassword);
     std::cout << "client password = " + clientPassword << std::endl;
     std::cout << "server password = " + serverPassword << std::endl;
-    if(serverPassword == clientPassword)
+    if(serverPassword == clientPassword){
         std::cout <<"Password " + clientPassword +  " Acepted, Now Connecting ..." << std::endl;
+        return true;
+    }
+        
     else
         throw std::runtime_error( "PASSWORD" + clientPassword +  " Is WRONG, try again" );//TODO changer pour le code d'erreur
+         return false;
 }

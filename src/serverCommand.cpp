@@ -5,44 +5,70 @@ void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
 
-	if(command_[0] == "PING"){
-		handlePing(client);
-		return ;
-	}
+
 	if (command_[0] == "CAP LS 302") {
 		client.setHasCapLs();
 	}
-	if(command_[0] == "JOIN"){
-		join(client);
-		return ;
+	if(command_[0] == "PING"){
+		handlePing(client);
 	}
 	if (command_[0] == "NICK") {
 		nick(client);
-		return ;
 	}
 	if (command_[0] == "PASS") {
 		pass(client);
-		return ;
 	}
+	if(client.getNickName() != "*" && client.getAuthSent() == false)
+	{
+		client.setAuthSent();
+		client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
+	}
+
 	if (command_[0] == "PRIVMSG") {
 		privmsg(client);
-		return ;
+		return;
+	}
+	if(command_[0] == "JOIN"){
+		join(client);
+		return;
 	}
 	if (command_[0] == "PART") {
 		part(client);
-	return ;
+		return;
 	}
+	return ;
 }
 
-void Server::nick(Client &client){
-	client.send(RPL_NICK(client.getNickName(), command_[1]));
-	client.setNickName(command_[1]);
+
+bool Server::checkClientByNickName(std::string name){
+	for (unsigned long i = 0; i < clientVector_.size(); i++){
+		if (clientVector_[i].getNickName() == name)
+			return true;
+	}
+	return false;
 }
+
+
+void Server::nick(Client &client) {
+	if (checkClientByNickName(command_[1]) == true)
+		client.send(ERR_NICKNAMEINUSE(client.getNickName( ),command_[1]));
+	else {
+		client.send(RPL_NICK(client.getNickName(), command_[1]));
+		client.setNickName(command_[1]);
+		client.setHasNick();
+	}
+	return;
+}
+
 
 void Server::pass(Client &client){
 	client.setHasPassword();
 	client.setPassword((command_[1]));
-	password_check(serverPassword_, client.getPassword());
+	if(password_check(serverPassword_, client.getPassword()) == true)
+		{
+			client.setIsAuth();
+			std::cout << "AUTH VALIDATE" << std::endl;
+		}
 }
 
 void Server::privmsg(Client &client){

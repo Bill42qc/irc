@@ -72,8 +72,8 @@ run: $(NAME)
 nc:
 	nc 127.0.0.1 6667
 
-weechat: $(NAME)
-	docker pull weechat/weechat
+weechat:
+	@cd WeeChat_Docker && docker build -t my-weechat-image . && docker run -it --rm my-weechat-image
 
 wee: $(NAME)
 	docker run -it --rm --name weechat-container weechat/weechat /bin/sh -c \

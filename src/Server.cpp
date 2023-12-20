@@ -80,15 +80,13 @@ void Server::receiveNewConnection(){
 	pollfd_.push_back(clientfd);
 
 	Client client(clientSocket);
-	client.send("authenticate placeholder \r\n");
 	// std::string massage = "001 " + client.getNickName() + " :Welcome to the IRC server, user!user@host\r\n";
 	// const char* welcomeMessage = massage.c_str();
 	// send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
-	std::string nick_temp = "user";
+	std::string nick_temp = "*";
 	client.setNickName(nick_temp);
 	client.setUserName("user");
 	client.setHostName("host");
-	client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	addClient(client);
 }
 

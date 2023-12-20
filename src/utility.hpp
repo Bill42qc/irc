@@ -75,6 +75,6 @@ void addSpaceAfterKeywords(std::string& input);
 void removeCRTL(std::string& str);
 void removeReturn(std::string& str);
 void removeNewlines(std::string& str);
-void password_check (std::string serverPassword, std::string clientPassword);
+bool password_check (std::string serverPassword, std::string clientPassword);
 
 #endif
