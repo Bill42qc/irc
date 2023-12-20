@@ -18,6 +18,10 @@ void Server::parsMsg(std::string const &recept, Client &client)
 		return ;
 	}
 
+	if(command_[0] == "PING"){
+		handlePing(client);
+		return ;
+	}
 	if(client.getIsAuth() == false)
 		return;
 
@@ -27,10 +31,6 @@ void Server::parsMsg(std::string const &recept, Client &client)
 		client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	}
 
-	if(command_[0] == "PING"){
-		handlePing(client);
-		return ;
-	}
 	if(command_[0] == "JOIN"){
 		join(client);
 		std::cout << "JOIN BEEEN CALLLED MOTHERFUCKER" << std::endl;

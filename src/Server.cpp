@@ -90,6 +90,7 @@ void Server::receiveNewConnection(){
 	pollfd_.push_back(clientfd);
 
 	Client client(clientSocket);
+	client.setHostName("host");
 	addClient(client);
 }
 
