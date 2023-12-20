@@ -23,7 +23,6 @@ void Server::parsMsg(std::string const &recept, Client &client)
 		return;
 	}
 	if(command_[0] == "JOIN"){
-		std::cout << "got here" << std::endl;
 		join(client);
 	}
 	if (command_[0] == "PRIVMSG") {
@@ -92,7 +91,6 @@ void Server::privmsg(Client &client){
 
 void Server::join(Client &client)
 {
-	std::cout << "attempting to join a channel" << std::endl;
 	try{
 		Channel &channel = getChannel(command_[1]);
 		try{
