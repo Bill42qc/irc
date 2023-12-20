@@ -14,17 +14,22 @@ Server::~Server(){
 bool isAuthValid (Client &client)
 {
 	std::cout << "checking authentificate" << std::endl;
-	if (client.getHasNick() == true && client.getHasPassword() == true && client.getIsAuth() == false)
-	{
+	if (client.getHasNick() == true && client.getHasPassword() == true && client.getIsAuth() == false) {
 		std::cout << "AUTH IS VALIDATE" << std::endl;
 		client.setIsAuth(); //set to is auth true
 		client.setAuthSent();
 		client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 	}
-	else{
-		if (client.getHasNick() == false) {std::cout << "nick missing" << std::endl;}
-		if (client.getHasPassword() == false) {std::cout << "password missing" << std::endl;}
-		if (client.getIsAuth() == true) {std::cout << "already auth" << std::endl;}
+	else {
+		if (client.getHasNick() == false) {
+			std::cout << "nick missing" << std::endl;
+		}
+		if (client.getHasPassword() == false) {
+			std::cout << "password missing" << std::endl;
+		}
+		if (client.getIsAuth() == true) {
+			std::cout << "already auth" << std::endl;
+		}
 	}
 	std::cout << "check done" << std::endl;
 	return false;
@@ -40,15 +45,15 @@ void Server::handleClientInput(int i) {
 
     if (bytesRead > 0) {
         client.catMSG(buffer);
-        
+
         if (buffer[bytesRead - 2] == 13) {
-           
+
             std::cout << "Received data client: " << client.getMSG() << std::endl;
 			std::string tmpStr = client.getMSG();
-			
+
 			// Remove newline characters '\n' before splitting on '\r'
             removeNewlines(tmpStr);
-            std::vector<std::string> commandChain = splitString(tmpStr, '\r'); 
+            std::vector<std::string> commandChain = splitString(tmpStr, '\r');
 
             for (size_t i = 0; i < commandChain.size(); i++) {
 				addSpaceAfterKeywords(commandChain[i]);

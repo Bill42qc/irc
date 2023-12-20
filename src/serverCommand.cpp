@@ -34,13 +34,13 @@ void Server::parsMsg(std::string const &recept, Client &client)
 }
 
 
-void Server::nick(Client &client){
+void Server::nick(Client &client) {
 	if (checkClientByNickName(command_[1]) == true)
 		client.send(ERR_NICKNAMEINUSE(client.getNickName( ),command_[1]));
-	else{
-	client.setNickName(command_[1]);
-	client.setHasNick();
-	client.send(RPL_NICK(client.getNickName(), command_[1]));
+	else {
+		client.send(RPL_NICK(client.getNickName(), command_[1]));
+		client.setNickName(command_[1]);
+		client.setHasNick();
 	}
 
 }
