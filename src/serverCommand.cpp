@@ -55,10 +55,25 @@ bool Server::checkClientByNickName(std::string name){
 	return false;
 }
 
+bool checkIllegalClientNickName(std::string name){
+
+	if (name.find(':') == std::string::npos || name.find('#') == std::string::npos || name.find('@') == std::string::npos || name.find('&') == std::string::npos|| name.find(' ') == std::string::npos){
+		return true;
+	}
+	return false;
+
+}
 
 void Server::nick(Client &client) {
-	if (checkClientByNickName(command_[1]) == true)
+	if (checkClientByNickName(command_[1]) == true){
 		client.send(ERR_NICKNAMEINUSE(client.getNickName( ),command_[1]));
+	}
+	else if (checkIllegalClientNickName(command_[1]) == true){
+		client.send(ERR_ERRONEUSNICKNAME(client.getNickName(), command_[1]));
+	}
+	else if (command_[1].empty() == true){
+		client.send(ERR_NONICKNAMEGIVEN(client.getNickName()));
+	}
 	else {
 		client.send(RPL_NICK(client.getNickName(), command_[1]));
 		for (size_t j = 0; j < channelVector_.size(); ++j){
@@ -133,6 +148,11 @@ void Server::join(Client &client)
 	try{
 		Channel &channel = getChannel(command_[1]);
 		try{
+			try{
+				channel.getClientByNickName(client.getNickName());
+				client.send(ERR_USERONCHANNEL(client.getNickName(), client.getNickName(), channel.getName()));
+			}
+			catch (std::exception){ return ;}
 			if(channel.getIsInviteOnly() == true){
 				if(channel.isOnInviteList(client)){
 					if (command_.size() > 2){
