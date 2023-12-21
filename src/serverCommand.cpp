@@ -5,7 +5,6 @@ void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
 
-
 	if (command_[0] == "CAP LS 302") {
 		client.setHasCapLs();
 	}
@@ -18,12 +17,17 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	if (command_[0] == "PASS") {
 		pass(client);
 	}
+	if (command_[0] == "USER" && client.getAuthSent() == false) {
+		user(client);
+	}
+
 	if(client.getHasPassword() == true && client.getNickName() != "*")
 	{
 		if(client.getAuthSent() == false)
 		{
 			client.setAuthSent();
 			client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
+						std::cout << GRE << "AUTHENTIFICATION COMPLETE" << WHT << std::endl;
 		}
 
 		if (command_[0] == "PRIVMSG") {
@@ -70,8 +74,12 @@ void Server::pass(Client &client){
 		{
 			client.setHasPassword();
 			client.setIsAuth();
-			std::cout << "AUTH VALIDATE" << std::endl;
+			std::cout << GRE << "PASSWORD OK" << WHT << std::endl;
 		}
+}
+
+void Server::user(Client &client){
+	client.setUserName((command_[1]));
 }
 
 void Server::privmsg(Client &client){
@@ -192,7 +200,6 @@ ACommand *Server::commandFactory(Client &client){
 		else if (command_.size() < 2) {
 				client.send(ERR_NEEDMOREPARAMS(client.getNickName() ,command));
 		}
-
 		Channel &channel = getChannel(chanName);
 		try{
 			channel.getClientByNickName(client.getNickName());

@@ -34,7 +34,6 @@ void Server::handleClientInput(int i) {
 
             for (size_t i = 0; i < commandChain.size(); i++) {
 				addSpaceAfterKeywords(commandChain[i]);
-                std::cout << "command chain [" << i << "]: " << commandChain[i] << std::endl;
                 parsMsg(commandChain[i], client);
             }
 
@@ -54,7 +53,8 @@ void Server::handleClientInput(int i) {
         removeClient(i);
         pollfd_.erase(pollfd_.begin() + i + 1);
     } else {
-		std::cerr << "Error RECV, please restart the server." << std::endl;
+		std::cerr << "Error RECV, closing client NOW." << std::endl;
+		removeClient(i);
         return;
     }
 }
@@ -81,9 +81,6 @@ void Server::receiveNewConnection(){
 	pollfd_.push_back(clientfd);
 
 	Client client(clientSocket);
-	// std::string massage = "001 " + client.getNickName() + " :Welcome to the IRC server, user!user@host\r\n";
-	// const char* welcomeMessage = massage.c_str();
-	// send(clientSocket, welcomeMessage, strlen(welcomeMessage), 0);
 	std::string nick_temp = "*";
 	client.setNickName(nick_temp);
 	client.setUserName("user");
@@ -131,8 +128,7 @@ void Server::listenSocket(){
 		close(socket_);
 		throw ListenException();
 		}
-
-	std::cout << "Server listening on port " << port_ << "..." << std::endl;
+	std::cout << std::endl << GRE << "Server listening on port " << port_  << WHT << "..." << std::endl;
 }
 
 void signalHandler(int sig){
@@ -192,12 +188,11 @@ void Server::init(const std::string &port, const std::string &password){
 }
 
 void Server::shutdown(){
-	std::cout << "shutting down server" << std::endl;
+	std::cout << std::endl << YEL << "SERVER SHUT DOWN by user !!! :)" << std::endl;
 	for (unsigned int i = 0; i < clientVector_.size(); ++i){
 		removeClient(i);
 	}
 	close(pollfd_[0].fd); //closing server socket
-
 	pollfd_.clear();
 	clientVector_.clear();
 }
@@ -281,7 +276,4 @@ void Server::handlePing(Client &client) {
 		// Send a PONG response back to the client
 		std::string pongResponse = "PONG " + pingContent + CRLF;
 		client.send(pongResponse);
-
-		std::cout <<"PONG sent to CLIENT" << std::endl;
-
 }

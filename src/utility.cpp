@@ -74,12 +74,8 @@ void removeCRTL(std::string& str) {
 
 bool password_check (std::string serverPassword, std::string clientPassword, Client &client)
 {
-    std::cout << "client password before remove nl = " + clientPassword << std::endl;
     removeCRTL(clientPassword);
-    std::cout << "client password = " + clientPassword << std::endl;
-    std::cout << "server password = " + serverPassword << std::endl;
     if(serverPassword == clientPassword){
-        std::cout <<"Password " + clientPassword +  " Acepted, Now Connecting ..." << std::endl;
         return true;
     }
         

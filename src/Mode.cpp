@@ -10,7 +10,6 @@ void Mode::exe() const
 	bool addOrSub = true;
 	bool unknownMode = false;
 	std::string unknownModeString = "";
-	printf("the fuck?\n");
 	if (args_.size() == 2){
 		sender_.send(RPL_CHANNELMODEIS(sender_.getNickName(), channel_.getName(), channel_.getMode()));
 		return;
@@ -20,7 +19,6 @@ void Mode::exe() const
 		return;
 	}
 	for (unsigned long i = 0; i < args_[2].size(); i++){
-		printf("char is = %c\n", args_[2][i]);
 		if (args_[2][i] == '-'){
 			addOrSub = false;
 		}
@@ -43,7 +41,6 @@ void Mode::exe() const
 		}
 		if (unknownMode == true){
 			sender_.send("placeholder");
-			printf("the fuck??????\n");
 		}
 	}
 	
@@ -88,22 +85,17 @@ bool Mode::removeMode(char modeChar) const{
 
 bool Mode::AddMode(char modeChar, size_t *i) const{
 
-	printf("here?\n");
 	if (modeChar == 'i'){
-		printf("setting to invite only\n");
 		channel_.setInviteOnly(false);
 		return true;
 	}
 	if (modeChar == 't'){
-		printf("setting limited topic\n");
 		channel_.setIsTopicLimited_(false);
 		return true;
 	}
 	if (modeChar == 'o'){
-		printf("setting setting new op\n");
 		if (args_.size() > *i)
 		{
-			printf("setting setting new op2\n");
 			try{
 				Client &newOperator = channel_.getClientByNickName(args_[*i]);
 				channel_.addOperator(newOperator);
@@ -117,7 +109,6 @@ bool Mode::AddMode(char modeChar, size_t *i) const{
 		return true;
 	}
 	if (modeChar == 'l'){
-		printf("setting user limit\n");
 		if (args_.size() > *i)
 		{
 			try{
@@ -131,7 +122,6 @@ bool Mode::AddMode(char modeChar, size_t *i) const{
 		return true;
 	}
 	if (modeChar == 'k'){
-		printf("setting new password\n");
 		if (args_.size() > *i)
 		{
 			channel_.setNeedPassword_(true);

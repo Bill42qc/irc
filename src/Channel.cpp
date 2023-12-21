@@ -135,7 +135,7 @@ Client &Channel::getClientByNickName(std::string name){
 void Channel::joinChannel(Client &client){
 	if (!needPassword_)
 	{
-		std::cout << "bravo " << client.getNickName() << " you join join " << name_ << std::endl;
+		std::cout << "Bravo " << client.getNickName() << " you join " << name_ << std::endl;
 		addClient(client);
 		return ;
 	}
@@ -143,7 +143,7 @@ void Channel::joinChannel(Client &client){
 }
 
 void Channel::joinChannel(Client &client,const std::string &password){
-		std::cout << "bravo " << client.getNickName() << " you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
+		std::cout << "Bravo " << client.getNickName() << " you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
 	if (password == password_) {
 		addClient(client);
 		return ;
