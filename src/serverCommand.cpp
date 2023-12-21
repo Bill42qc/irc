@@ -18,23 +18,26 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	if (command_[0] == "PASS") {
 		pass(client);
 	}
-	if(client.getNickName() != "*" && client.getAuthSent() == false)
+	if(client.getHasPassword() == true && client.getNickName() != "*")
 	{
-		client.setAuthSent();
-		client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
-	}
+		if(client.getAuthSent() == false)
+		{
+			client.setAuthSent();
+			client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
+		}
 
-	if (command_[0] == "PRIVMSG") {
-		privmsg(client);
-		return;
-	}
-	if(command_[0] == "JOIN"){
-		join(client);
-		return;
-	}
-	if (command_[0] == "PART") {
-		part(client);
-		return;
+		if (command_[0] == "PRIVMSG") {
+			privmsg(client);
+			return;
+		}
+		if(command_[0] == "JOIN"){
+			join(client);
+			return;
+		}
+		if (command_[0] == "PART") {
+			part(client);
+			return;
+		}
 	}
 	return ;
 }
@@ -62,10 +65,10 @@ void Server::nick(Client &client) {
 
 
 void Server::pass(Client &client){
-	client.setHasPassword();
 	client.setPassword((command_[1]));
-	if(password_check(serverPassword_, client.getPassword()) == true)
+	if(password_check(serverPassword_, client.getPassword(), client) == true)
 		{
+			client.setHasPassword();
 			client.setIsAuth();
 			std::cout << "AUTH VALIDATE" << std::endl;
 		}
@@ -181,12 +184,12 @@ ACommand *Server::commandFactory(Client &client){
 	try{
 		std::string chanName = command_[1];
 		if (command == "INVITE"){
-			if (command_.size() != 3){
+			if (command_.size() < 3){
 				client.send(ERR_NEEDMOREPARAMS(client.getNickName() ,command));
 			}
 			chanName = command_[2];
 		}
-		else if (command_.size() != 2) {
+		else if (command_.size() < 2) {
 				client.send(ERR_NEEDMOREPARAMS(client.getNickName() ,command));
 		}
 

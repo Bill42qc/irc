@@ -4,6 +4,7 @@
 # include <iostream>
 # include <vector>
 # include <string>
+# include "Client.hpp"
 
 // COLOR-----------------------------------------------------------------------
 # define BCK "\x1B[30m"
@@ -14,7 +15,7 @@
 # define MAG "\x1B[35m"
 # define CYA "\x1B[36m"
 # define WHT "\x1B[37m"
-
+class Client;
 
 #define CRLF "\r\n"
 
@@ -75,6 +76,6 @@ void addSpaceAfterKeywords(std::string& input);
 void removeCRTL(std::string& str);
 void removeReturn(std::string& str);
 void removeNewlines(std::string& str);
-bool password_check (std::string serverPassword, std::string clientPassword);
+bool password_check (std::string serverPassword, std::string clientPassword, Client &client);
 
 #endif

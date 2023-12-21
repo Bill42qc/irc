@@ -1,5 +1,6 @@
 #include "utility.hpp"
 
+
 std::vector<std::string> splitString(const std::string &input, char limiter)
 {
     std::vector<std::string> result;
@@ -71,7 +72,7 @@ void removeCRTL(std::string& str) {
     }
 }
 
-bool password_check (std::string serverPassword, std::string clientPassword)
+bool password_check (std::string serverPassword, std::string clientPassword, Client &client)
 {
     std::cout << "client password before remove nl = " + clientPassword << std::endl;
     removeCRTL(clientPassword);
@@ -83,6 +84,6 @@ bool password_check (std::string serverPassword, std::string clientPassword)
     }
         
     else
-        throw std::runtime_error( "PASSWORD" + clientPassword +  " Is WRONG, try again" );//TODO changer pour le code d'erreur
+        client.send(ERR_PASSWDMISMATCH(client.getNickName()));//TODO changer pour le code d'erreur
          return false;
 }

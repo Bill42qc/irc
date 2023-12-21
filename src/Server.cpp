@@ -54,7 +54,8 @@ void Server::handleClientInput(int i) {
         removeClient(i);
         pollfd_.erase(pollfd_.begin() + i + 1);
     } else {
-        throw RecvException();
+		std::cerr << "Error RECV, please restart the server." << std::endl;
+        return;
     }
 }
 
@@ -281,6 +282,6 @@ void Server::handlePing(Client &client) {
 		std::string pongResponse = "PONG " + pingContent + CRLF;
 		client.send(pongResponse);
 
-		std::cout <<RED "Sent PONG to client: " WHT<< client.getUserName() << pongResponse << std::endl;
+		std::cout <<"PONG sent to CLIENT" << std::endl;
 
 }
