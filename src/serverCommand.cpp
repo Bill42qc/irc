@@ -122,6 +122,11 @@ void Server::privmsg(Client &client){
 
 void Server::join(Client &client)
 {
+	if(!(command_[1][0] == '#' || command_[1][0] == '&'))
+	{
+		client.send(ERR_BADCHANMASK(command_[1]));
+		return ;
+	}
 	try{
 		Channel &channel = getChannel(command_[1]);
 		try{

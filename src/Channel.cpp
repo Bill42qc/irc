@@ -111,7 +111,7 @@ Client &Channel::getClientByHostName(std::string name){
 		if (clientVector_[i].getHostName() == name)
 			return clientVector_[i];
 	}
-	throw std::runtime_error("Client not found");//TODO changer pour le code d'erreur
+	throw std::runtime_error("Client not found");
 
 }
 
@@ -120,7 +120,7 @@ Client &Channel::getClientByUserName(std::string name){
 		if (clientVector_[i].getUserName() == name)
 			return clientVector_[i];
 	}
-	throw std::runtime_error("Client not found");//TODO changer pour le code d'erreur
+	throw std::runtime_error("Client not found");
 }
 
 Client &Channel::getClientByNickName(std::string name){

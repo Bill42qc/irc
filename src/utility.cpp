@@ -80,6 +80,6 @@ bool password_check (std::string serverPassword, std::string clientPassword, Cli
     }
         
     else
-        client.send(ERR_PASSWDMISMATCH(client.getNickName()));//TODO changer pour le code d'erreur
+        client.send(ERR_PASSWDMISMATCH(client.getNickName()));
          return false;
 }
