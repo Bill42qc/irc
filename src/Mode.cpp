@@ -33,21 +33,21 @@ void Mode::exe() const
 			}
 		}
 		else {
-			if (removeMode(args_[2][i]) == false)
+			if (removeMode(args_[2][i], &lastArgUse) == false)
 			{
 				unknownMode = true;
 				unknownModeString += args_[2][i];
 			}
 		}
 		if (unknownMode == true){
-			sender_.send("placeholder");
+			sender_.send(ERR_UNKNOWNMODE(sender_.getNickName(), unknownModeString));
 		}
 	}
 	
 
 }
 
-bool Mode::removeMode(char modeChar) const{
+bool Mode::removeMode(char modeChar, size_t *i) const{
 	if (modeChar == 'i'){
 		channel_.setInviteOnly(false);
 		return true;
@@ -57,19 +57,22 @@ bool Mode::removeMode(char modeChar) const{
 		return true;
 	}
 	if (modeChar == 'o'){
-		try
+		if (args_.size() > *i)
 		{
-			if (args_.size() < 4){
+			try
+			{
 				Client &deletedOP = channel_.getClientByNickName(args_[3]);
 				channel_.removeOperator(deletedOP);
 				channel_.broadcastUserList(sender_);
 			}
-			
+			catch(const std::exception& e)
+			{
+				sender_.send(ERR_INVALIDMODEPARAM(sender_.getNickName(), channel_.getName(), std::string("o"), args_[*i], std::string("user not on channel")));
+			}
 		}
-		catch(const std::exception& e)
-		{
+		else {
+			sender_.send(ERR_NEEDMOREPARAMS(sender_.getNickName(), "MODE"));
 		}
-		
 		return true;
 	}
 	if (modeChar == 'l'){
@@ -106,6 +109,9 @@ bool Mode::AddMode(char modeChar, size_t *i) const{
 			}
 			*i = *i + 1;
 		}
+		else {
+			sender_.send(ERR_NEEDMOREPARAMS(sender_.getNickName(), "MODE"));
+		}
 		return true;
 	}
 	if (modeChar == 'l'){
@@ -116,8 +122,13 @@ bool Mode::AddMode(char modeChar, size_t *i) const{
 				channel_.setUserLimit(limit);
 				channel_.setIsClientLimited_(true);
 			}
-			catch (std::exception &e){}
+			catch (std::exception &e){
+				sender_.send(ERR_INVALIDMODEPARAM(sender_.getNickName(), channel_.getName(), std::string("l"), args_[*i], std::string("invalid user limit")));
+			}
 			*i = *i + 1;
+		}
+		else {
+			sender_.send(ERR_NEEDMOREPARAMS(sender_.getNickName(), "MODE"));
 		}
 		return true;
 	}
@@ -127,6 +138,9 @@ bool Mode::AddMode(char modeChar, size_t *i) const{
 			channel_.setNeedPassword_(true);
 			channel_.setPassword(args_[*i]);
 			*i = *i + 1;
+		}
+		else {
+			sender_.send(ERR_NEEDMOREPARAMS(sender_.getNickName(), "MODE"));
 		}
 		return true;
 	}

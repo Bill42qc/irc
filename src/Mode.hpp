@@ -13,7 +13,7 @@ public:
 	Mode(Channel &channel, Client &sender, std::vector<std::string> v): ACommand(channel, sender, v){};
 	~Mode();
 	// Functions
-	bool removeMode(char modeChar) const;
+	bool removeMode(char modeChar, size_t *i) const;
 	bool AddMode(char modeChar, size_t *i) const;
 	void exe() const;
 };
