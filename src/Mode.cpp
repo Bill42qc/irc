@@ -89,11 +89,11 @@ bool Mode::removeMode(char modeChar, size_t *i) const{
 bool Mode::AddMode(char modeChar, size_t *i) const{
 
 	if (modeChar == 'i'){
-		channel_.setInviteOnly(false);
+		channel_.setInviteOnly(true);
 		return true;
 	}
 	if (modeChar == 't'){
-		channel_.setIsTopicLimited_(false);
+		channel_.setIsTopicLimited_(true);
 		return true;
 	}
 	if (modeChar == 'o'){

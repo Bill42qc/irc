@@ -26,6 +26,7 @@ public:
     Channel& operator=(const Channel &other);
     bool operator!=(const Channel &other);
     // Functions
+    void updateUser(Client &client, std::string newNick);
     void addClient(Client &client);
     void joinChannel(Client &client);
     void joinChannel(Client &client,const std::string &password);
@@ -44,6 +45,8 @@ public:
     Client &getClientByHostName(std::string name);
     Client &getClientByUserName(std::string name);
     Client &getClientByNickName(std::string name);
+    Client &getClientByOP(std::string name);
+    Client &getClientByList(std::string name);
     std::string getMode();
     //inline function
     void setUserLimit(int limit){userLimit_ = limit;}

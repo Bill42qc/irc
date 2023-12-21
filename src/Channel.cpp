@@ -133,6 +133,11 @@ Client &Channel::getClientByNickName(std::string name){
 
 
 void Channel::joinChannel(Client &client){
+	if (isClientLimited_){
+		if (clientVector_.size() >= static_cast<size_t>(userLimit_)){
+			throw std::runtime_error(ERR_CHANNELISFULL(client.getNickName(), name_));
+		}
+	}
 	if (!needPassword_)
 	{
 		std::cout << "Bravo " << client.getNickName() << " you join " << name_ << std::endl;
@@ -143,13 +148,51 @@ void Channel::joinChannel(Client &client){
 }
 
 void Channel::joinChannel(Client &client,const std::string &password){
-		std::cout << "Bravo " << client.getNickName() << " you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
-	if (password == password_) {
+	std::cout << "Bravo " << client.getNickName() << " you join channel " << name_ << "with PASSWORD :" << password_ << std::endl;
+
+	if (isClientLimited_){
+		if (clientVector_.size() >= static_cast<size_t>(userLimit_)){
+			throw std::runtime_error(ERR_CHANNELISFULL(client.getNickName(), name_));
+		}
+	}
+	if (password == password_ || !needPassword_) {
 		addClient(client);
 		return ;
 	}
 	throw std::runtime_error(ERR_PASSWDMISMATCH(client.getNickName()));
 }
+
+//DONT USE THIS ROMAIN OR BILLY this is some wacky stuff dont ask question
+Client &Channel::getClientByList(std::string name){
+	for (unsigned long i = 0; i < InviteList_.size(); ++i){
+		if (InviteList_[i].getNickName() == name)
+			return InviteList_[i];
+	}
+	throw std::runtime_error("Client not found");
+}
+
+//DONT USE THIS ROMAIN OR BILLY this is some wacky stuff dont ask question
+Client &Channel::getClientByOP(std::string name){
+	for (unsigned long i = 0; i < operatorVector_.size(); ++i){
+		if (operatorVector_[i].getNickName() == name)
+			return operatorVector_[i];
+	}
+	throw std::runtime_error("Client not found");
+}
+
+
+void Channel::updateUser(Client &client, std::string newNick){
+	try {
+		Client &cl = getClientByNickName(client.getNickName());
+		cl.setNickName(newNick);
+		Client &op = getClientByOP(client.getNickName());
+		op.setNickName(newNick);
+		Client &in = getClientByList(client.getNickName());
+		in.setNickName(newNick);
+	}
+	catch (std::exception){}
+}
+
 
 void Channel::addInviteList(Client &invite){
 		InviteList_.push_back(invite);

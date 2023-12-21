@@ -164,8 +164,8 @@ void Server::run(){
 					}
 				}
 				catch (std::exception& e) {
-				std::cout << e.what() << std::endl;
-				removeClient(i - 1);
+					std::cout << e.what() << std::endl;
+					removeClient(i - 1);
 				}
 			}
 		}
@@ -214,11 +214,11 @@ void Server::removeClient(int i){
 	for (size_t j = 0; j < channelVector_.size(); ++j){
 		channelVector_[j].removeClient(client);
 	}
-
 	clientVector_[i].closeSocket();
 	if (i >= 0 && i < static_cast<int>(clientVector_.size()))
 		 clientVector_.erase(clientVector_.begin() + i);
-	
+
+
 }
 
 

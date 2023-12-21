@@ -61,6 +61,9 @@ void Server::nick(Client &client) {
 		client.send(ERR_NICKNAMEINUSE(client.getNickName( ),command_[1]));
 	else {
 		client.send(RPL_NICK(client.getNickName(), command_[1]));
+		for (size_t j = 0; j < channelVector_.size(); ++j){
+			channelVector_[j].updateUser(client, command_[1]);
+		}
 		client.setNickName(command_[1]);
 		client.setHasNick();
 	}
@@ -132,10 +135,16 @@ void Server::join(Client &client)
 		try{
 			if(channel.getIsInviteOnly() == true){
 				if(channel.isOnInviteList(client)){
-					if (command_.size() > 2)
+					if (command_.size() > 2){
 						channel.joinChannel(client, command_[2]);
-					else
+						client.send(RPL_JOIN(client.getNickName(), command_[1]));
+						client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
+					}
+					else{
 						channel.joinChannel(client);
+						client.send(RPL_JOIN(client.getNickName(), command_[1]));
+						client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
+					}
 				}
 				else{
 					throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
@@ -251,7 +260,7 @@ void Server::part(Client &client)
 				client.send(ERR_NOTONCHANNEL(client.getNickName(), chan.getName()));
 				return ;
 			}
-			chan.broadcastEveryoneElse(RPL_PART(client.getNickName(), chan.getName()), client);
+			chan.broadcastEveryone(RPL_PART(client.getNickName(), chan.getName()));
 			chan.removeClient(client);
 		}
 		catch (std::exception){
