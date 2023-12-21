@@ -22,15 +22,15 @@ void Server::handleClientInput(int i) {
 
     if (bytesRead > 0) {
         client.catMSG(buffer);
-        
+
         if (buffer[bytesRead - 2] == 13) {
-           
+
             std::cout << "Received data client: " << client.getMSG() << std::endl;
 			std::string tmpStr = client.getMSG();
 
 			// Remove newline characters '\n' before splitting on '\r'
             removeNewlines(tmpStr);
-            std::vector<std::string> commandChain = splitString(tmpStr, '\r'); 
+            std::vector<std::string> commandChain = splitString(tmpStr, '\r');
 
             for (size_t i = 0; i < commandChain.size(); i++) {
 				addSpaceAfterKeywords(commandChain[i]);
@@ -211,14 +211,13 @@ void Server::addClient(Client &client){
 //i : the index of the client in the vector
 void Server::removeClient(int i){
 	Client &client = getClient(i);
-	for (size_t j = 0; j < channelVector_.size(); ++j){
+	client.setAuthSent(false);
+	for (size_t j = 0; j < channelVector_.size(); ++j) {
 		channelVector_[j].removeClient(client);
 	}
 	clientVector_[i].closeSocket();
 	if (i >= 0 && i < static_cast<int>(clientVector_.size()))
 		 clientVector_.erase(clientVector_.begin() + i);
-
-
 }
 
 
@@ -229,7 +228,7 @@ void Server::addChannel(Channel &channel){
 }
 
 Channel &Server::getChannel(std::string &name){
-	for (unsigned long i = 0;  i < channelVector_.size(); ++i){
+	for (unsigned long i = 0;  i < channelVector_.size(); ++i) {
 		if (channelVector_[i] == name){
 			return channelVector_[i];
 		}

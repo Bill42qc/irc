@@ -41,6 +41,7 @@ void Channel::addClient(Client &client){
 void Channel::removeClient(const Client &client){
 	for (unsigned long i = 0; i < clientVector_.size(); ++i){
 		if (client == clientVector_[i]){
+			broadcastEveryone(RPL_PART(client.getNickName(), getName()));
 			clientVector_.erase(clientVector_.begin() + i);
 			return ;
 		}
@@ -239,7 +240,7 @@ std::string Channel::getMode(){
 	if ( needPassword_ == true)
 		modeList + 'k';
 	if (isClientLimited_ == true)
-		modeList + 'l';	
+		modeList + 'l';
 	if (isTopicLimited_ == true)
 		modeList + 't';
 	return modeList;

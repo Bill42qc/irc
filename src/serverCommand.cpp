@@ -20,12 +20,12 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	if (command_[0] == "USER" && client.getAuthSent() == false) {
 		user(client);
 	}
-
+	// std::cout << "pass = " << client.getHasPassword() << std::endl << "auhtsens = " << client.getAuthSent() << std::endl << "nick = " << client.getNickName() << std::endl;
 	if(client.getHasPassword() == true && client.getNickName() != "*")
 	{
 		if(client.getAuthSent() == false)
 		{
-			client.setAuthSent();
+			client.setAuthSent(true);
 			client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 						std::cout << GRE << "AUTHENTIFICATION COMPLETE" << WHT << std::endl;
 		}

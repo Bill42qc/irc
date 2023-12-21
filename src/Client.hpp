@@ -54,7 +54,7 @@ public:
 	void setHasCapLs(){hasCapLs_ = true;}
 	void setHasNick(){hasNick_ = true;}
 	void setHasUser(){hasUser_ = true;}
-	void setAuthSent(){authSent_ = true;}
+	void setAuthSent(bool a){authSent_ = a;}
 	void setIsAuth(){isAuth_ = true;}
 	void catMSG(std::string msg){msg_ = msg_ + msg;}
 	void rmCarReturnMSG(){msg_ = msg_.substr(0, msg_.size() - 1);}

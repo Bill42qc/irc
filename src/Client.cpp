@@ -3,7 +3,7 @@
 Client::Client(){
 }
 
-Client::Client(int clientSocket): nickName_(""), clientSocket_(clientSocket), hasPassword_(false), authSent_(false), isAuth_(false){	
+Client::Client(int clientSocket): hostName_(""), nickName_(""), userName_(""), clientSocket_(clientSocket), hasPassword_(false), hasCapLs_(false), hasNick_(false), hasUser_(false), authSent_(false), isAuth_(false) {
 }
 
 Client::Client(const Client &other){
