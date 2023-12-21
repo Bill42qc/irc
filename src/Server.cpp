@@ -210,9 +210,15 @@ void Server::addClient(Client &client){
 ///@param
 //i : the index of the client in the vector
 void Server::removeClient(int i){
+	Client &client = getClient(i);
+	for (size_t j = 0; j < channelVector_.size(); ++j){
+		channelVector_[j].removeClient(client);
+	}
+
 	clientVector_[i].closeSocket();
 	if (i >= 0 && i < static_cast<int>(clientVector_.size()))
 		 clientVector_.erase(clientVector_.begin() + i);
+	
 }
 
 
