@@ -50,10 +50,10 @@ public:
 	void setUserName(const std::string &name) { userName_ = name; }
 	void setHostName(const std::string &name) { hostName_ = name; }
 	void setPassword( std::string &name) { clientPassword_ = name; }
-	void setHasPassword(){hasPassword_ = true;}
+	void setHasPassword(bool flag){hasPassword_ = flag;}
 	void setHasCapLs(){hasCapLs_ = true;}
 	void setHasNick(){hasNick_ = true;}
-	void setHasUser(){hasUser_ = true;}
+	void setHasUser(bool flag){hasUser_ = flag;}
 	void setAuthSent(bool a){authSent_ = a;}
 	void setIsAuth(){isAuth_ = true;}
 	void catMSG(std::string msg){msg_ = msg_ + msg;}

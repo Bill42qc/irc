@@ -37,7 +37,7 @@ class Client;
 #define ERR_NOTONCHANNEL(client, channel) ("442 " + client + " " + channel + " :You're not on that channel" + CRLF)
 #define ERR_USERONCHANNEL(client, nick, channel) ("443 " + client + " " + nick  + " " + channel + " :is already on channel" + CRLF)
 #define ERR_NEEDMOREPARAMS(client, command) ("461 " + client + " " + command + " :Not enough parameters" + CRLF)
-#define ERR_ALREADYREGISTERED(client) ("462 " + client + command + " :You may not reregister" + CRLF)
+#define ERR_ALREADYREGISTERED(client) ("462 " + client + " :You may not reregister" + CRLF)
 #define ERR_PASSWDMISMATCH(client) ("464 " + client + " :Password incorrect" + CRLF)
 #define ERR_CHANNELISFULL(client, channel) ("471 " + client + channel + " :Cannot join channel (+l)" + CRLF)
 #define ERR_UNKNOWNMODE(client, mode) ("472 " + client + " " + mode + " :is unknown mode char to me" + CRLF)
@@ -49,7 +49,7 @@ class Client;
 #define ERR_NOOPERHOST(client) ("491 " + client + " :No O-lines for your host" + CRLF)
 #define ERR_INVALIDMODEPARAM(client, channel, char , param, description) ("696 " + client + " " + channel + " " + char + " " + param + " :" + description + CRLF)
 // RPL CORRECT //
-
+#define ERR_NOTREGISTERED(client) ("451 " + client + " :You have not registered" + CRLF)
 #define RPL_WELCOME(nick, user, host) ("001 " + nick + " :Welcome to the IRC server, " + nick + "!" + user + "@" + host + CRLF)
 #define RPL_AWAY(client, nick, msg) ("301 " + client + " " + nick + " :Is outline" + CRLF)
 #define RPL_CHANNELMODEIS(client, channel, mode) ("324 " + client + " " + channel + " " + mode + CRLF)

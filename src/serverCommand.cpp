@@ -1,6 +1,13 @@
 #include "Server.hpp"
 #include "utility.hpp"
 
+bool isregisteredCommand(std::string name){
+	if (name == "JOIN" || name == "PART" || name == "PRIVMSG" || name == "KICK" || name == "TOPIC" || name == "MODE" || name == "INVITE"){
+		return true;
+	}
+	return false;
+}
+
 void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
@@ -8,20 +15,20 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	if (command_[0] == "CAP LS 302") {
 		client.setHasCapLs();
 	}
-	if(command_[0] == "PING"){
+	else if(command_[0] == "PING"){
 		handlePing(client);
 	}
-	if (command_[0] == "NICK") {
+	else if (command_[0] == "NICK") {
 		nick(client);
 	}
-	if (command_[0] == "PASS") {
+	else if (command_[0] == "PASS") {
 		pass(client);
 	}
-	if (command_[0] == "USER" && client.getAuthSent() == false) {
+	else if (command_[0] == "USER" && client.getAuthSent() == false) {
 		user(client);
 	}
 	// std::cout << "pass = " << client.getHasPassword() << std::endl << "auhtsens = " << client.getAuthSent() << std::endl << "nick = " << client.getNickName() << std::endl;
-	if(client.getHasPassword() == true && client.getNickName() != "*")
+	if(client.getHasPassword() == true && client.getNickName() != "*" && client.getHasUser() == true)
 	{
 		if(client.getAuthSent() == false)
 		{
@@ -43,9 +50,10 @@ void Server::parsMsg(std::string const &recept, Client &client)
 			return;
 		}
 	}
+	else if (isregisteredCommand(command_[0]))
+        client.send(ERR_NOTREGISTERED(client.getNickName()));
 	return ;
 }
-
 
 bool Server::checkClientByNickName(std::string name){
 	for (unsigned long i = 0; i < clientVector_.size(); i++){
@@ -56,11 +64,10 @@ bool Server::checkClientByNickName(std::string name){
 }
 
 bool checkIllegalClientNickName(std::string name){
-
 	if (name.find(':') == std::string::npos || name.find('#') == std::string::npos || name.find('@') == std::string::npos || name.find('&') == std::string::npos|| name.find(' ') == std::string::npos){
-		return true;
+		return false;
 	}
-	return false;
+	return true;
 
 }
 
@@ -88,16 +95,33 @@ void Server::nick(Client &client) {
 
 void Server::pass(Client &client){
 	client.setPassword((command_[1]));
-	if(password_check(serverPassword_, client.getPassword(), client) == true)
+	if (client.getHasPassword() == true){
+		client.send(ERR_ALREADYREGISTERED(client.getNickName()));
+	}
+	else if(password_check(serverPassword_, client.getPassword(), client) == true)
 		{
-			client.setHasPassword();
+			client.setHasPassword(true);
 			client.setIsAuth();
 			std::cout << GRE << "PASSWORD OK" << WHT << std::endl;
 		}
 }
 
 void Server::user(Client &client){
-	client.setUserName((command_[1]));
+	if (client.getHasUser() == true){
+		client.send(ERR_ALREADYREGISTERED(client.getNickName()));
+	}
+	if (command_.size() > 5){
+		client.send(ERR_NEEDMOREPARAMS(client.getNickName(), "USER"));
+	}
+	if (command_[1].empty() == true || command_[2].empty() == true || command_[3].empty() == true || command_[4].empty() == true ){
+		client.send(ERR_NEEDMOREPARAMS(client.getNickName(), "USER"));
+	}
+	if (command_[1].find(' ') != std::string::npos || command_[1].find(':') != std::string::npos || command_[1].find('!') != std::string::npos || command_[1].find('*') != std::string::npos|| command_[1].find('&') != std::string::npos || command_[1].find('#') != std::string::npos || command_[1].find('@') != std::string::npos){
+		command_[1] = client.getNickName();
+	}
+	std::string username = command_[1];
+	client.setUserName(username);
+	client.setHasUser(true);
 }
 
 void Server::privmsg(Client &client){

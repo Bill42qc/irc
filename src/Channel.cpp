@@ -235,13 +235,13 @@ bool Channel::isOnInviteList(Client &client){
 
 std::string Channel::getMode(){
 	std::string modeList = "+";
-	if ( isInviteOnly_ == true)
-		modeList + 'i';
+	if (isInviteOnly_ == true)
+		modeList += 'i';
 	if ( needPassword_ == true)
-		modeList + 'k';
+		modeList += 'k';
 	if (isClientLimited_ == true)
-		modeList + 'l';
+		modeList += 'l';
 	if (isTopicLimited_ == true)
-		modeList + 't';
+		modeList += 't';
 	return modeList;
 }

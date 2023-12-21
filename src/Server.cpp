@@ -212,6 +212,8 @@ void Server::addClient(Client &client){
 void Server::removeClient(int i){
 	Client &client = getClient(i);
 	client.setAuthSent(false);
+	client.setHasUser(false);
+	client.setHasPassword(false);
 	for (size_t j = 0; j < channelVector_.size(); ++j) {
 		channelVector_[j].removeClient(client);
 	}
