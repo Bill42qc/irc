@@ -40,13 +40,14 @@ class Client;
 #define ERR_ALREADYREGISTERED(client) ("462 " + client + command + " :You may not reregister" + CRLF)
 #define ERR_PASSWDMISMATCH(client) ("464 " + client + " :Password incorrect" + CRLF)
 #define ERR_CHANNELISFULL(client, channel) ("471 " + client + channel + " :Cannot join channel (+l)" + CRLF)
+#define ERR_UNKNOWNMODE(client, mode) ("472 " + client + " " + mode + " :is unknown mode char to me" + CRLF)
 #define ERR_INVITEONLYCHAN(client, channel)  ("473 " + client + channel + " :Cannot join channel (+i)" + CRLF)
 #define ERR_BANNEDFROMCHAN(client, channel) ("474 " + client + channel + " :Cannot join channel (+b)" + CRLF)
 #define ERR_BADCHANNELKEY(client, channel) ("475 " + client + channel + " :Cannot join channel (+k)" + CRLF)
 #define ERR_BADCHANMASK(channel) ("476 " + channel + " :Bad Channel Mask" + CRLF)
 #define ERR_CHANOPRIVSNEEDED(client, channel) ("482 " + client + " " + channel + " :You're not channel operator" + CRLF)
 #define ERR_NOOPERHOST(client) ("491 " + client + " :No O-lines for your host" + CRLF)
-#define ERR_INVALIDMODEPARAM(client, channel, char , param, description) ("696 " + client + " " + channel + " " + char + " " + param + " :" + discription + CRLF)
+#define ERR_INVALIDMODEPARAM(client, channel, char , param, description) ("696 " + client + " " + channel + " " + char + " " + param + " :" + description + CRLF)
 // RPL CORRECT //
 
 #define RPL_WELCOME(nick, user, host) ("001 " + nick + " :Welcome to the IRC server, " + nick + "!" + user + "@" + host + CRLF)
