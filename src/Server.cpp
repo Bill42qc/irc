@@ -1,7 +1,7 @@
 #include "Server.hpp"
 
 const char *WELCOME_MSG = "Welcome into FT_IRC by bmarttin, pbergero and rofontai";
-const int MAX_CONNECTIONS = 100;
+const int MAX_CONNECTIONS = 250;
 const int BUFFER_SIZE = 2048;
 static bool exiting = false;
 
@@ -55,6 +55,8 @@ void Server::handleClientInput(int i) {
     } else {
 		std::cerr << "Error RECV, closing client NOW." << std::endl;
 		removeClient(i);
+		close(clientSocket);
+		pollfd_.erase(pollfd_.begin() + i + 1);
         return;
     }
 }
