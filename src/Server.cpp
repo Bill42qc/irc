@@ -166,6 +166,8 @@ void Server::run(){
 				catch (std::exception& e) {
 					std::cout << e.what() << std::endl;
 					removeClient(i - 1);
+					close (pollfd_[i].fd);
+					pollfd_.erase(pollfd_.begin() + i);
 				}
 			}
 		}
@@ -185,6 +187,7 @@ void Server::init(const std::string &port, const std::string &password){
 	bindSocket();
 	listenSocket();
 	signal(SIGINT, signalHandler);
+	signal(SIGPIPE, SIG_IGN);
 }
 
 void Server::shutdown(){

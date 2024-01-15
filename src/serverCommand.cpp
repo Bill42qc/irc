@@ -1,13 +1,6 @@
 #include "Server.hpp"
 #include "utility.hpp"
 
-bool isregisteredCommand(std::string name){
-	if (name == "JOIN" || name == "PART" || name == "PRIVMSG" || name == "KICK" || name == "TOPIC" || name == "MODE" || name == "INVITE"){
-		return true;
-	}
-	return false;
-}
-
 void Server::parsMsg(std::string const &recept, Client &client)
 {
 	command_ = splitString(recept, 32);
@@ -15,26 +8,28 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	if (command_[0] == "CAP LS 302") {
 		client.setHasCapLs();
 	}
-	else if(command_[0] == "PING"){
+	if(command_[0] == "PING"){
 		handlePing(client);
 	}
-	else if (command_[0] == "NICK") {
+	if (command_[0] == "NICK") {
 		nick(client);
 	}
-	else if (command_[0] == "PASS") {
+	if (command_[0] == "PASS") {
 		pass(client);
 	}
-	else if (command_[0] == "USER") {
+	if (command_[0] == "USER") {
 		user(client);
 	}
 	// std::cout << "pass = " << client.getHasPassword() << std::endl << "auhtsens = " << client.getAuthSent() << std::endl << "nick = " << client.getNickName() << std::endl;
-	if(client.getHasPassword() == true && client.getNickName() != "*" && client.getHasUser() == true)
+	if(client.getHasPassword() == true && client.getNickName() != "*")
 	{
 		if(client.getAuthSent() == false)
 		{
-			client.setAuthSent(true);
-			client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
-						std::cout << GRE << "AUTHENTIFICATION COMPLETE" << WHT << std::endl;
+			if (client.getHasUser() == true){
+				client.setAuthSent(true);
+				client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
+				std::cout << GRE << "AUTHENTIFICATION COMPLETE" << WHT << std::endl;
+			}
 		}
 
 		if (command_[0] == "PRIVMSG") {
@@ -50,10 +45,9 @@ void Server::parsMsg(std::string const &recept, Client &client)
 			return;
 		}
 	}
-	else if (isregisteredCommand(command_[0]))
-        client.send(ERR_NOTREGISTERED(client.getNickName()));
 	return ;
 }
+
 
 bool Server::checkClientByNickName(std::string name){
 	for (unsigned long i = 0; i < clientVector_.size(); i++){
@@ -63,18 +57,17 @@ bool Server::checkClientByNickName(std::string name){
 	return false;
 }
 
+
 bool checkIllegalClientNickName(std::string name){
 	if (name.find(':') == std::string::npos || name.find('#') == std::string::npos || name.find('@') == std::string::npos || name.find('&') == std::string::npos|| name.find(' ') == std::string::npos){
 		return false;
 	}
 	return true;
-
 }
 
 void Server::nick(Client &client) {
-	if (checkClientByNickName(command_[1]) == true){
+	if (checkClientByNickName(command_[1]) == true)
 		client.send(ERR_NICKNAMEINUSE(client.getNickName( ),command_[1]));
-	}
 	else if (checkIllegalClientNickName(command_[1]) == true){
 		client.send(ERR_ERRONEUSNICKNAME(client.getNickName(), command_[1]));
 	}
@@ -95,10 +88,7 @@ void Server::nick(Client &client) {
 
 void Server::pass(Client &client){
 	client.setPassword((command_[1]));
-	if (client.getHasPassword() == true){
-		client.send(ERR_ALREADYREGISTERED(client.getNickName()));
-	}
-	else if(password_check(serverPassword_, client.getPassword(), client) == true)
+	if(password_check(serverPassword_, client.getPassword(), client) == true)
 		{
 			client.setHasPassword(true);
 			client.setIsAuth();
@@ -120,8 +110,7 @@ void Server::user(Client &client){
 		return ;
 	}
 	if (command_[1].find(' ') != std::string::npos || command_[1].find(':') != std::string::npos || command_[1].find('!') != std::string::npos || command_[1].find('*') != std::string::npos|| command_[1].find('&') != std::string::npos || command_[1].find('#') != std::string::npos || command_[1].find('@') != std::string::npos || command_[2] != "0" || command_[2] != "*"){
-		client.send(ERR_ERRONEUSUSERNAME(client.getNickName(), client.getNickName()));
-		return;
+		command_[1] = client.getNickName();
 	}
 	std::string username = command_[1];
 	client.setUserName(username);
@@ -179,17 +168,20 @@ void Server::join(Client &client)
 			try{
 				channel.getClientByNickName(client.getNickName());
 				client.send(ERR_USERONCHANNEL(client.getNickName(), client.getNickName(), channel.getName()));
+				return ;
 			}
-			catch (std::exception){ return ;}
+			catch (std::exception){}
 			if(channel.getIsInviteOnly() == true){
 				if(channel.isOnInviteList(client)){
 					if (command_.size() > 2){
 						channel.joinChannel(client, command_[2]);
+						channel.broadcastUserList(client);
 						client.send(RPL_JOIN(client.getNickName(), command_[1]));
 						client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
 					}
 					else{
 						channel.joinChannel(client);
+						channel.broadcastUserList(client);
 						client.send(RPL_JOIN(client.getNickName(), command_[1]));
 						client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
 					}
@@ -308,7 +300,7 @@ void Server::part(Client &client)
 				client.send(ERR_NOTONCHANNEL(client.getNickName(), chan.getName()));
 				return ;
 			}
-			chan.broadcastEveryone(RPL_PART(client.getNickName(), chan.getName()));
+			//chan.broadcastEveryone(RPL_PART(client.getNickName(), chan.getName()));
 			chan.removeClient(client);
 		}
 		catch (std::exception){
