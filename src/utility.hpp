@@ -31,6 +31,7 @@ class Client;
 #define ERR_NOTEXTTOSEND(client) ("412 " + client + " :No text to send" + CRLF)
 #define ERR_NONICKNAMEGIVEN(client) ("431 " + client + " " + " :No nickname given" + CRLF)
 #define ERR_ERRONEUSNICKNAME(client, nick) ("432 " + client + nick + " :Erroneus nickname" + CRLF)
+#define ERR_ERRONEUSUSERNAME(client, nick) ("432 " + client + nick + " :Erroneus username" + CRLF)
 #define ERR_NICKNAMEINUSE(client, nick) ("433 " + client + nick + " :Nickname is already in use" + CRLF)
 #define ERR_NICKCOLLISION(client, nick, user, host) ("436 " + client + nick + " :Nickname collision KILL from" + user + host CRLF)
 #define ERR_USERNOTINCHANNEL(client, nick, channel) ("441 " + client + " " + nick + " " + channel + " :They aren't on that channel" + CRLF)

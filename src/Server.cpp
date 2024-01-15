@@ -218,6 +218,7 @@ void Server::removeClient(int i){
 		channelVector_[j].removeClient(client);
 	}
 	clientVector_[i].closeSocket();
+	bzero(&clientVector_[i], sizeof(Client));
 	if (i >= 0 && i < static_cast<int>(clientVector_.size()))
 		 clientVector_.erase(clientVector_.begin() + i);
 }

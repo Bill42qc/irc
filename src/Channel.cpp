@@ -172,7 +172,6 @@ Client &Channel::getClientByList(std::string name){
 	throw std::runtime_error("Client not found");
 }
 
-//DONT USE THIS ROMAIN OR BILLY this is some wacky stuff dont ask question
 Client &Channel::getClientByOP(std::string name){
 	for (unsigned long i = 0; i < operatorVector_.size(); ++i){
 		if (operatorVector_[i].getNickName() == name)

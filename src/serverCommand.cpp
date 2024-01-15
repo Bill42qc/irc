@@ -24,7 +24,7 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	else if (command_[0] == "PASS") {
 		pass(client);
 	}
-	else if (command_[0] == "USER" && client.getAuthSent() == false) {
+	else if (command_[0] == "USER") {
 		user(client);
 	}
 	// std::cout << "pass = " << client.getHasPassword() << std::endl << "auhtsens = " << client.getAuthSent() << std::endl << "nick = " << client.getNickName() << std::endl;
@@ -109,15 +109,19 @@ void Server::pass(Client &client){
 void Server::user(Client &client){
 	if (client.getHasUser() == true){
 		client.send(ERR_ALREADYREGISTERED(client.getNickName()));
+		return ;
 	}
 	if (command_.size() > 5){
 		client.send(ERR_NEEDMOREPARAMS(client.getNickName(), "USER"));
+		return ;
 	}
 	if (command_[1].empty() == true || command_[2].empty() == true || command_[3].empty() == true || command_[4].empty() == true ){
 		client.send(ERR_NEEDMOREPARAMS(client.getNickName(), "USER"));
+		return ;
 	}
-	if (command_[1].find(' ') != std::string::npos || command_[1].find(':') != std::string::npos || command_[1].find('!') != std::string::npos || command_[1].find('*') != std::string::npos|| command_[1].find('&') != std::string::npos || command_[1].find('#') != std::string::npos || command_[1].find('@') != std::string::npos){
-		command_[1] = client.getNickName();
+	if (command_[1].find(' ') != std::string::npos || command_[1].find(':') != std::string::npos || command_[1].find('!') != std::string::npos || command_[1].find('*') != std::string::npos|| command_[1].find('&') != std::string::npos || command_[1].find('#') != std::string::npos || command_[1].find('@') != std::string::npos || command_[2] != "0" || command_[2] != "*"){
+		client.send(ERR_ERRONEUSUSERNAME(client.getNickName(), client.getNickName()));
+		return;
 	}
 	std::string username = command_[1];
 	client.setUserName(username);
