@@ -20,18 +20,9 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	if (command_[0] == "USER") {
 		user(client);
 	}
-	// std::cout << "pass = " << client.getHasPassword() << std::endl << "auhtsens = " << client.getAuthSent() << std::endl << "nick = " << client.getNickName() << std::endl;
-	if(client.getHasPassword() == true && client.getNickName() != "*")
+	authenticate(client);
+	if(client.getAuthSent() == true)
 	{
-		if(client.getAuthSent() == false)
-		{
-			if (client.getHasUser() == true){
-				client.setAuthSent(true);
-				client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
-				std::cout << GRE << "AUTHENTIFICATION COMPLETE" << WHT << std::endl;
-			}
-		}
-
 		if (command_[0] == "PRIVMSG") {
 			privmsg(client);
 			return;
@@ -48,6 +39,16 @@ void Server::parsMsg(std::string const &recept, Client &client)
 	return ;
 }
 
+void Server::authenticate(Client &client){
+	if (client.getAuthSent() == true)
+		return ;
+
+	if (client.getHasUser() == true && client.getHasNick() == true && client.getHasPassword() == true){
+		client.setAuthSent(true);
+		client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
+		std::cout << GRE << "AUTHENTIFICATION COMPLETE" << WHT << std::endl;
+	}
+}
 
 bool Server::checkClientByNickName(std::string name){
 	for (unsigned long i = 0; i < clientVector_.size(); i++){
@@ -59,7 +60,7 @@ bool Server::checkClientByNickName(std::string name){
 
 
 bool checkIllegalClientNickName(std::string name){
-	if (name.find(':') == std::string::npos || name.find('#') == std::string::npos || name.find('@') == std::string::npos || name.find('&') == std::string::npos|| name.find(' ') == std::string::npos){
+	if (name.find(':') == std::string::npos && name.find('#') == std::string::npos && name.find('@') == std::string::npos && name.find('&') == std::string::npos && name.find(' ') == std::string::npos){
 		return false;
 	}
 	return true;
@@ -80,7 +81,7 @@ void Server::nick(Client &client) {
 			channelVector_[j].updateUser(client, command_[1]);
 		}
 		client.setNickName(command_[1]);
-		client.setHasNick();
+		client.setHasNick(true);
 	}
 	return;
 }
@@ -91,7 +92,6 @@ void Server::pass(Client &client){
 	if(password_check(serverPassword_, client.getPassword(), client) == true)
 		{
 			client.setHasPassword(true);
-			client.setIsAuth();
 			std::cout << GRE << "PASSWORD OK" << WHT << std::endl;
 		}
 }
@@ -175,15 +175,15 @@ void Server::join(Client &client)
 				if(channel.isOnInviteList(client)){
 					if (command_.size() > 2){
 						channel.joinChannel(client, command_[2]);
-						channel.broadcastUserList(client);
 						client.send(RPL_JOIN(client.getNickName(), command_[1]));
 						client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
+						channel.broadcastUserList(client);
 					}
 					else{
 						channel.joinChannel(client);
-						channel.broadcastUserList(client);
 						client.send(RPL_JOIN(client.getNickName(), command_[1]));
 						client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
+						channel.broadcastUserList(client);
 					}
 				}
 				else{

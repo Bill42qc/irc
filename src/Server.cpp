@@ -219,11 +219,11 @@ void Server::removeClient(int i){
 	client.setAuthSent(false);
 	client.setHasUser(false);
 	client.setHasPassword(false);
+	client.setHasNick(false);
 	for (size_t j = 0; j < channelVector_.size(); ++j) {
 		channelVector_[j].removeClient(client);
 	}
 	clientVector_[i].closeSocket();
-	bzero(&clientVector_[i], sizeof(Client));
 	if (i >= 0 && i < static_cast<int>(clientVector_.size()))
 		 clientVector_.erase(clientVector_.begin() + i);
 }

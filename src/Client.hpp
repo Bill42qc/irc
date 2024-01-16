@@ -52,7 +52,7 @@ public:
 	void setPassword( std::string &name) { clientPassword_ = name; }
 	void setHasPassword(bool flag){hasPassword_ = flag;}
 	void setHasCapLs(){hasCapLs_ = true;}
-	void setHasNick(){hasNick_ = true;}
+	void setHasNick(bool flag){hasNick_ = flag;}
 	void setHasUser(bool flag){hasUser_ = flag;}
 	void setAuthSent(bool a){authSent_ = a;}
 	void setIsAuth(){isAuth_ = true;}
