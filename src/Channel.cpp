@@ -185,8 +185,16 @@ void Channel::updateUser(Client &client, std::string newNick){
 	try {
 		Client &cl = getClientByNickName(client.getNickName());
 		cl.setNickName(newNick);
+		broadcastEveryone(RPL_PART(client.getNickName(), getName()));
+		broadcastUserList(cl);
+	}
+	catch (std::exception){}
+	try {
 		Client &op = getClientByOP(client.getNickName());
 		op.setNickName(newNick);
+	}
+	catch (std::exception){}
+	try {
 		Client &in = getClientByList(client.getNickName());
 		in.setNickName(newNick);
 	}

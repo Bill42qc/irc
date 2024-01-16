@@ -39,9 +39,9 @@ void Mode::exe() const
 				unknownModeString += args_[2][i];
 			}
 		}
-		if (unknownMode == true){
-			sender_.send(ERR_UNKNOWNMODE(sender_.getNickName(), unknownModeString));
-		}
+	}
+	if (unknownMode == true){
+		sender_.send(ERR_UNKNOWNMODE(sender_.getNickName(), unknownModeString));
 	}
 	
 
