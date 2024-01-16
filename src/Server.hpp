@@ -54,6 +54,7 @@ public:
 	void addClient(Client &client);
 	void removeClient(int i);
 	void addChannel(Channel &channel);
+	void removeChannel(std::string &name);
 	void handleNewConnection();
 	void parsMsg(std::string const &recept, Client &client);//remplit le vecteur et pars le vecteur
 	void handleData(int clientSocket);
@@ -66,6 +67,7 @@ public:
 	void part(Client &client);
 	void sendUserList(Client &client);
 	void authenticate(Client &client);
+	void checkEmptyChan();
 	ACommand *commandFactory(Client &client);
 
 	Client &getClient(int i){return clientVector_[i];}

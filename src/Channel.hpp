@@ -30,7 +30,7 @@ public:
     void addClient(Client &client);
     void joinChannel(Client &client);
     void joinChannel(Client &client,const std::string &password);
-    void removeClient(const Client &client);
+    void removeClient(Client &client);
     void addOperator(Client &client);
     void removeOperator(Client &client);
     bool isOperator(Client &client);
@@ -61,6 +61,7 @@ public:
     std::string &getTopic(){return topic_;}
     bool getNeedPassword(){return needPassword_;}
     bool getIsInviteOnly(){return isInviteOnly_;}
+    int getNBClient(){return clientVector_.size();}
     bool isChannelFull();
     bool enterPassword(std::string password){return (password == password_ ? true : false);}
     std::string &getName() {return name_;}

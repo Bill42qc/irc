@@ -38,11 +38,22 @@ void Channel::addClient(Client &client){
 // Client client client received by ref that will be removed in the Vector that contain the connected client
 ///@brief
 //remove client to the list of connected client
-void Channel::removeClient(const Client &client){
+void Channel::removeClient(Client &client){
 	for (unsigned long i = 0; i < clientVector_.size(); ++i){
 		if (client == clientVector_[i]){
 			broadcastEveryone(RPL_PART(client.getNickName(), getName()));
 			clientVector_.erase(clientVector_.begin() + i);
+			try {
+				removeOperator(getClientByOP(client.getNickName()));
+				if (operatorVector_.size() == 0)
+				{
+					if (clientVector_.size() > 0){
+						addOperator(clientVector_[0]);
+						broadcastUserList(client);
+					}
+				}
+			}
+			catch (std::exception){}
 			return ;
 		}
 	}

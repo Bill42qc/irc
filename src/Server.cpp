@@ -223,11 +223,11 @@ void Server::removeClient(int i){
 	for (size_t j = 0; j < channelVector_.size(); ++j) {
 		channelVector_[j].removeClient(client);
 	}
+
 	clientVector_[i].closeSocket();
 	if (i >= 0 && i < static_cast<int>(clientVector_.size()))
 		 clientVector_.erase(clientVector_.begin() + i);
 }
-
 
 ///@brief
 //add a channel to the map
@@ -289,4 +289,13 @@ void Server::handlePing(Client &client) {
 		// Send a PONG response back to the client
 		std::string pongResponse = "PONG " + pingContent + CRLF;
 		client.send(pongResponse);
+}
+
+void Server::removeChannel(std::string &name){
+	for (unsigned long i = 0; i < channelVector_.size(); ++i){
+		if (channelVector_[i].getName() == name){
+			channelVector_.erase(channelVector_.begin() + i);
+			return ;
+		}
+	}
 }

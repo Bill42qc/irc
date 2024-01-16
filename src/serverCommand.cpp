@@ -304,6 +304,9 @@ void Server::part(Client &client)
 			}
 			//chan.broadcastEveryone(RPL_PART(client.getNickName(), chan.getName()));
 			chan.removeClient(client);
+			if (chan.getNBClient() == 0){
+				removeChannel(chan.getName());
+			}
 		}
 		catch (std::exception){
 			client.send(ERR_NOSUCHCHANNEL(client.getNickName(), command_[1]));
