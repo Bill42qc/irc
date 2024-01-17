@@ -43,8 +43,7 @@ void Mode::exe() const
 	if (unknownMode == true){
 		sender_.send(ERR_UNKNOWNMODE(sender_.getNickName(), unknownModeString));
 	}
-	
-
+	channel_.broadcastEveryone(RPL_CHANNELMODEIS(sender_.getNickName(), channel_.getName(), channel_.getMode()));
 }
 
 bool Mode::removeMode(char modeChar, size_t *i) const{

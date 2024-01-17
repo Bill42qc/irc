@@ -18,6 +18,7 @@ void Topic::exe() const
     if (args_.size() == 2)
     {
         sender_.send(RPL_TOPIC(sender_.getNickName(), channel_.getName(), channel_.getTopic()));
+        return ;
     }
     if ((channel_.getIsTopicLimited_() == true)){
 

@@ -44,11 +44,9 @@ void Server::authenticate(Client &client){
 	if (client.getAuthSent() == true)
 		return ;
 	if (client.getHasUser() == true && client.getHasNick() == true && client.getHasPassword() == true){
-		std::cerr << CYA << "auth send is = to " << client.getAuthSent() << std::endl;
 		client.setAuthSent(true);
 		client.send(RPL_WELCOME(client.getNickName(), client.getUserName(), client.getHostName()));
 		std::cout << GRE << "AUTHENTIFICATION COMPLETE" << WHT << std::endl;
-		std::cerr << CYA << "auth send is = to " << client.getAuthSent() << std::endl;
 	}
 }
 

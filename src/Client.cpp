@@ -39,6 +39,7 @@ Client& Client::operator=(const Client &other){
 		hasCapLs_ = other.hasCapLs_;
 		hasUser_ = other.hasUser_;
 		isAuth_ = other.isAuth_;
+		authSent_ = other.authSent_;
 		hasNick_ = other.hasNick_;
 	}
 	return *this;
