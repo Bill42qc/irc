@@ -111,7 +111,7 @@ void Server::user(Client &client){
 		client.send(ERR_NEEDMOREPARAMS(client.getNickName(), "USER"));
 		return ;
 	}
-	if (command_[1].find(' ') != std::string::npos || command_[1].find(':') != std::string::npos || command_[1].find('!') != std::string::npos || command_[1].find('*') != std::string::npos|| command_[1].find('&') != std::string::npos || command_[1].find('#') != std::string::npos || command_[1].find('@') != std::string::npos || command_[2] != "0" || command_[2] != "*"){
+	if (command_[1].find(' ') != std::string::npos || command_[1].find(':') != std::string::npos || command_[1].find('!') != std::string::npos || command_[1].find('*') != std::string::npos|| command_[1].find('&') != std::string::npos || command_[1].find('#') != std::string::npos || command_[1].find('@') != std::string::npos || command_[2] != "0" || command_[3] != "*"){
 		command_[1] = client.getNickName();
 	}
 	std::string username = command_[1];
