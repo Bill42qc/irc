@@ -26,6 +26,7 @@ SRCS	=	main.cpp \
 			Topic.cpp \
 			utility.cpp \
 			serverCommand.cpp\
+			join.cpp
 
 SRCS_DIR = src
 # Objects are all .o files

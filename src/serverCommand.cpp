@@ -155,68 +155,6 @@ void Server::privmsg(Client &client){
 	}
 }
 
-void Server::join(Client &client)
-{
-	if(!(command_[1][0] == '#' || command_[1][0] == '&'))
-	{
-		client.send(ERR_BADCHANMASK(command_[1]));
-		return ;
-	}
-	try{
-		Channel &channel = getChannel(command_[1]);
-		try{
-			try{
-				channel.getClientByNickName(client.getNickName());
-				client.send(ERR_USERONCHANNEL(client.getNickName(), client.getNickName(), channel.getName()));
-				return ;
-			}
-			catch (std::exception){}
-			if(channel.getIsInviteOnly() == true){
-				if(channel.isOnInviteList(client)){
-					if (command_.size() > 2){
-						channel.joinChannel(client, command_[2]);
-						client.send(RPL_JOIN(client.getNickName(), command_[1]));
-						client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
-						channel.broadcastUserList(client);
-					}
-					else{
-						channel.joinChannel(client);
-						client.send(RPL_JOIN(client.getNickName(), command_[1]));
-						client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
-						channel.broadcastUserList(client);
-					}
-				}
-				else{
-					throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
-				}
-			}
-			else if (command_.size() > 2){
-				channel.joinChannel(client, command_[2]);
-				client.send(RPL_JOIN(client.getNickName(), command_[1]));
-				client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
-				getChannel(command_[1]).broadcastUserList(client);
-			}
-			else {
-				channel.joinChannel(client);
-				client.send(RPL_JOIN(client.getNickName(), command_[1]));
-				client.send(RPL_TOPIC(client.getNickName(), command_[1], getChannel(command_[1]).getTopic()));
-				getChannel(command_[1]).broadcastUserList(client);
-			}
-		}
-		catch (std::exception &e){
-			client.send(e.what());
-		}
-	}
-	catch(std::exception) {
-		joinChannel(command_[1], client);
-		client.send(RPL_JOIN(client.getNickName(), command_[1]));
-		client.send(RPL_TOPIC(client.getNickName(), getChannel(command_[1]).getName(), getChannel(command_[1]).getTopic()));
-		getChannel(command_[1]).sendUserList(client);
-		getChannel(command_[1]).setNeedPassword_(false);
-	}
-}
-
-
 ///@brief
 //join a channel if it doesn exist create it if its not there yet
 ///@param

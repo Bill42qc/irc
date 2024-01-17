@@ -64,6 +64,9 @@ public:
 	void pass(Client &client);
 	void nick(Client &client);
 	void join(Client &client);
+	void joinWithoutPassword(Client &client, Channel &channel);
+	void joinPassword(Client &client, std::string password, Channel &channel);
+	void joinNotExistingChannel(Client &client, std::string channelName);
 	void part(Client &client);
 	void sendUserList(Client &client);
 	void authenticate(Client &client);
