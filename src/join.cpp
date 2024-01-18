@@ -47,11 +47,10 @@ void Server::join(Client &client)
 					channel.getClientByNickName(client.getNickName());
 					client.send(ERR_USERONCHANNEL(client.getNickName(), client.getNickName(), channel.getName()));
 					return ;
-				}
-			catch (std::exception){}
+				} catch (std::exception){}
 			if(channel.getIsInviteOnly() == true){
 				if(!channel.isOnInviteList(client)){
-				throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
+					throw std::runtime_error(ERR_INVITEONLYCHAN(client.getUserName(), channel.getName()));
 				}
 			}
 			if (password.size() <= i){

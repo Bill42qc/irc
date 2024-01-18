@@ -7,6 +7,9 @@ Channel::Channel(): name_(){
 }
 
 Channel::~Channel(){
+	clientVector_.clear();
+	operatorVector_.clear();
+	InviteList_.clear();
 }
 
 Channel& Channel::operator=(const Channel &other){
